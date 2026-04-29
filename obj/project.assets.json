@@ -8,19 +8,19 @@
     "net8.0": []
   },
   "packageFolders": {
-    "/home/csharp/.nuget/packages/": {}
+    "/home/cohorte6/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/home/csharp/Escritorio/ShiftManagement/ShiftManagement.csproj",
+      "projectUniqueName": "/home/cohorte6/Escritorio/Gestion-de-turnos/ShiftManagement.csproj",
       "projectName": "ShiftManagement",
-      "projectPath": "/home/csharp/Escritorio/ShiftManagement/ShiftManagement.csproj",
-      "packagesPath": "/home/csharp/.nuget/packages/",
-      "outputPath": "/home/csharp/Escritorio/ShiftManagement/obj/",
+      "projectPath": "/home/cohorte6/Escritorio/Gestion-de-turnos/ShiftManagement.csproj",
+      "packagesPath": "/home/cohorte6/.nuget/packages/",
+      "outputPath": "/home/cohorte6/Escritorio/Gestion-de-turnos/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "/home/csharp/.nuget/NuGet/NuGet.Config"
+        "/home/cohorte6/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net8.0"
@@ -38,6 +38,11 @@
         "warnAsError": [
           "NU1605"
         ]
+      },
+      "restoreAuditProperties": {
+        "enableAudit": "true",
+        "auditLevel": "low",
+        "auditMode": "direct"
       }
     },
     "frameworks": {
@@ -62,7 +67,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/8.0.126/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "/home/cohorte6/.dotnet/sdk/8.0.420/PortableRuntimeIdentifierGraph.json"
       }
     }
   }
