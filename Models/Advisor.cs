@@ -5,6 +5,9 @@ public class Advisor
     public int Id { get; set; }
     public string Fullname { get; set; } = string.Empty;
     
-    public DateTime CreateAt { get; set; } = DateTime.Now;
-    public DateTime UpdateAt { get; set; } = DateTime.Now;
+    public int WaitingRoomId { get; set; }
+    public WaitingRoom WaitingRoom { get; set; } = null!;
+    
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 }
