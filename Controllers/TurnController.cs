@@ -10,9 +10,9 @@ namespace ShiftManagement.Controllers;
 
 public class TurnController : Controller
 {
-    private readonly ApplicationDbContext _context;
+    private readonly MysqlDbContext _context;
 
-    public TurnController(ApplicationDbContext context)
+    public TurnController(MysqlDbContext context)
     {
         _context = context;
     }

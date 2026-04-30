@@ -26,7 +26,7 @@ public class PrintBackgroundService : BackgroundService
         {
             using (var scope = _serviceProvider.CreateScope())
             {
-                var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                var context = scope.ServiceProvider.GetRequiredService<MysqlDbContext>();
                 
                 var turnToPrint = await context.Turns
                     .Where(t => !t.IsPrinted)
