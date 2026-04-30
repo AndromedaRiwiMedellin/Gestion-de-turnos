@@ -1,0 +1,126 @@
+# ============================================================
+#  .NET 9 MVC + JetBrains Rider — .gitignore
+# ============================================================
+
+# ---------------------------
+# Build output
+# ---------------------------
+bin/
+obj/
+out/
+publish/
+
+# ---------------------------
+# .NET / MSBuild artifacts
+# ---------------------------
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# NuGet
+*.nupkg
+*.snupkg
+.nuget/
+packages/
+!**/packages/build/
+nuget.config.local
+
+# ---------------------------
+# ASP.NET / MVC específico
+# ---------------------------
+wwwroot/lib/          # librerías front instaladas con libman o npm
+wwwroot/dist/         # bundles generados
+appsettings.*.json    # sobreescrituras locales (dev, staging)
+!appsettings.json     # conserva el base
+secrets.json
+*.pfx
+*.p12
+
+# ---------------------------
+# Entity Framework
+# ---------------------------
+# Descomenta si no quieres commitear migraciones generadas automáticamente
+# Migrations/
+
+# ---------------------------
+# JetBrains Rider
+# ---------------------------
+.idea/
+*.sln.iml
+*.iws
+*.ipr
+
+# ---------------------------
+# Visual Studio (por si alguien del equipo lo usa)
+# ---------------------------
+.vs/
+*.rsuser
+*.vsp
+*.vspx
+*.sap
+
+# ---------------------------
+# Cobertura de pruebas / profiling
+# ---------------------------
+TestResults/
+coverage/
+*.coveragexml
+*.coverage
+BenchmarkDotNet.Artifacts/
+
+# ---------------------------
+# Logs y bases de datos locales
+# ---------------------------
+*.log
+*.log.*
+Logs/
+*.sqlite
+*.db
+*.db-shm
+*.db-wal
+localdb/
+
+# ---------------------------
+# Docker (archivos locales)
+# ---------------------------
+.env
+.env.local
+.env.*.local
+docker-compose.override.yml
+
+# ---------------------------
+# Sistema operativo
+# ---------------------------
+# Linux
+*~
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# ---------------------------
+# Node / front (si usas npm/webpack)
+# ---------------------------
+node_modules/
+npm-debug.log*
+yarn-error.log*
+.pnp.*
+dist/
+.cache/
+
+# ---------------------------
+# Misc
+# ---------------------------
+*.bak
+*.tmp
+*.temp
+*.orig
