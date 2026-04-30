@@ -1,0 +1,61 @@
+@model string
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Ticket</title>
+
+    <style>
+        body {
+            font-family: monospace;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        #ticket {
+            width: 220px;
+            margin: auto;
+            padding-top: 20px;
+        }
+
+        h1 {
+            font-size: 32px;
+            margin: 10px 0;
+        }
+
+        h2 {
+            margin: 5px 0;
+        }
+
+        p {
+            margin: 5px 0;
+        }
+
+        @@media print {
+            body {
+                margin: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div id="ticket">
+    <h2>SISTEMA DE TURNOS</h2>
+    <h1>@Model</h1>
+    <p>Espere su llamado</p>
+    <p>@DateTime.Now.ToString("dd/MM/yyyy HH:mm")</p>
+</div>
+
+<script>
+    window.addEventListener('load', function () {
+        setTimeout(function () {
+            window.print();
+        }, 800);
+    });
+</script>
+
+</body>
+</html>
