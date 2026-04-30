@@ -2,6 +2,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ShiftManagement.Data;
 using ShiftManagement.Models;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace ShiftManagement.Controllers;
 
@@ -17,34 +20,20 @@ public class TurnController : Controller
     public IActionResult Index() => View();
 
     [HttpPost]
-    public async Task<IActionResult> RequestTurn(DocumentType documentType, string documentNumber)
+    public async Task<IActionResult> RequestTurn()
     {
-        var user = await _context.Users
-            .FirstOrDefaultAsync(u => u.DocumentType == documentType && u.DocumentNumber == documentNumber);
+        // Genera el código basado en los turnos de hoy
+        int totalToday = await _context.Turns
+            .CountAsync(t => t.CreatedAt.Date == DateTime.Today);
+            
+        string newCode = $"A-{(totalToday + 1).ToString("D3")}";
 
-        if (user == null)
-        {
-            TempData["Warning"] = "You must register before requesting a turn.";
-            return RedirectToAction("Register", "User");
-        }
-
-        bool hasActiveTurn = await _context.Turns
-            .AnyAsync(t => t.UserId == user.Id &&
-                           (t.Status == Status.Waiting || t.Status == Status.Called || t.Status == Status.InProgress));
-
-        if (hasActiveTurn)
-        {
-            TempData["Error"] = "You already have an active turn.";
-            return RedirectToAction("Index");
-        }
-
-        var turn = new Turn { UserId = user.Id, WaitingRoomId = 1, Status = Status.Waiting };
-        _context.Turns.Add(turn);
+        var newTurn = new Turn { Code = newCode };
+        
+        _context.Turns.Add(newTurn);
         await _context.SaveChangesAsync();
 
-        turn.Code = $"A-{turn.Id:D3}";
-        await _context.SaveChangesAsync();
-
-        return View("Ticket", turn.Code);
+        TempData["Message"] = $"Your turn is {newCode}. Please wait for your ticket.";
+        return RedirectToAction("Index");
     }
 }

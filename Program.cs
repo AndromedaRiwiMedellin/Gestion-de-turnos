@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using ShiftManagement.Data;
-using ShiftManagement.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
