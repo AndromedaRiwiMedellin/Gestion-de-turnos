@@ -1,0 +1,44 @@
+@model ShiftManagement.Models.User
+@{
+    ViewData["Title"] = "Editar Usuario";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header fw-semibold">Editar información del usuario</div>
+            <div class="card-body">
+
+                <div class="mb-3 p-2 bg-light rounded small">
+                    <span class="text-muted">Documento:</span>
+                    <strong>@Model.DocumentType — @Model.DocumentNumber</strong>
+                    <span class="text-muted ms-2">(no editable)</span>
+                </div>
+
+                <form method="post" asp-action="EditUser" asp-route-id="@Model.Id">
+                    <div class="mb-3">
+                        <label class="form-label">Nombre completo</label>
+                        <input type="text" name="fullname" class="form-control"
+                               value="@Model.Fullname" required maxlength="200" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Teléfono</label>
+                        <input type="text" name="phone" class="form-control"
+                               value="@Model.Phone" maxlength="20" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="email" name="email" class="form-control"
+                               value="@Model.Email" maxlength="200" />
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">Guardar cambios</button>
+                        <a asp-controller="Advisor" asp-action="Index" class="btn btn-outline-secondary">Cancelar</a>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>

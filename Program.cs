@@ -3,13 +3,32 @@ using ShiftManagement.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<MysqlDbContext>(options =>
     options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),
         ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))));
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<MysqlDbContext>();
+    try
+    {
+        if (!db.WaitingRooms.Any())
+        {
+            var room = new WaitingRoom { Name = "Sala Principal", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow };
+            db.WaitingRooms.Add(room);
+            db.SaveChanges();
+            db.Advisors.Add(new Advisor { Fullname = "Asesor 1", WaitingRoomId = room.Id, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow });
+            db.SaveChanges();
+        }
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"[Seed] Skipped: {ex.Message}");
+    }
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
