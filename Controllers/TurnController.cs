@@ -38,25 +38,11 @@ public class TurnController : Controller
             return RedirectToAction("Index");
         }
 
-        var waitingRoom = await _context.WaitingRooms.FirstOrDefaultAsync();
-        if (waitingRoom == null)
-        {
-            TempData["Error"] = "No waiting room is available.";
-            return RedirectToAction("Index");
-        }
-
-        int totalToday = await _context.Turns
-            .CountAsync(t => t.CreatedAt.Date == DateTime.Today);
-
-        var turn = new Turn
-        {
-            Code = $"A-{(totalToday + 1):D3}",
-            UserId = user.Id,
-            WaitingRoomId = waitingRoom.Id,
-            Status = Status.Waiting
-        };
-
+        var turn = new Turn { UserId = user.Id, WaitingRoomId = 1, Status = Status.Waiting };
         _context.Turns.Add(turn);
+        await _context.SaveChangesAsync();
+
+        turn.Code = $"A-{turn.Id:D3}";
         await _context.SaveChangesAsync();
 
         return View("Ticket", turn.Code);
