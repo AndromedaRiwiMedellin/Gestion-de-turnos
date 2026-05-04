@@ -1,13 +1,32 @@
-@model string
-@{ Layout = null; }
+@model ShiftManagement.Models.Turn
+
+@{
+Layout = null;
+
+string prefix = Model.Code.Split("-")[0];
+
+string ticketTypeText = prefix switch
+{
+"U" => "Urgencias",
+"L" => "Laboratorio",
+"C" => "Cita médica",
+"I" => "Información",
+_ => "Consulta general"
+};
+}
 
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
-    <title>Tu Turno - @Model</title>
+    <title>Turno @Model.Code</title>
+
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
         body {
             font-family: 'Segoe UI', Arial, sans-serif;
@@ -18,50 +37,63 @@
             min-height: 100vh;
         }
 
-        .card {
+        .ticket {
+            width: 92%;
+            max-width: 460px;
             background: white;
             border-radius: 24px;
-            padding: 50px 70px;
+            padding: 48px 56px;
             text-align: center;
-            box-shadow: 0 4px 30px rgba(0,0,0,0.08);
-            max-width: 420px;
-            width: 90%;
-            border: 1px solid #eee;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.08);
+            border: 1px solid #eeeeee;
         }
 
-        .logo {
+        .brand {
             font-size: 13px;
             font-weight: 700;
             letter-spacing: 3px;
             color: #1a73e8;
             text-transform: uppercase;
-            margin-bottom: 30px;
+            margin-bottom: 28px;
         }
 
         .divider {
             height: 1px;
-            background: #f0f0f0;
+            background: #eeeeee;
             margin-bottom: 24px;
         }
 
         .label {
             font-size: 12px;
-            color: #bbb;
+            color: #999999;
             letter-spacing: 2px;
             text-transform: uppercase;
             margin-bottom: 8px;
         }
 
-        .turno {
-            font-size: 96px;
+        .code {
+            font-size: 88px;
             font-weight: 800;
             color: #1a1a2e;
             line-height: 1;
-            letter-spacing: -2px;
             margin-bottom: 24px;
         }
 
-        .estado {
+        .details {
+            background: #f8f9fa;
+            border-radius: 14px;
+            padding: 16px 18px;
+            text-align: left;
+            font-size: 14px;
+            color: #333333;
+            margin-bottom: 20px;
+        }
+
+        .details div {
+            margin-bottom: 6px;
+        }
+
+        .status {
             display: inline-flex;
             align-items: center;
             gap: 8px;
@@ -80,65 +112,111 @@
             height: 8px;
             background: #1a73e8;
             border-radius: 50%;
-            animation: pulse 1.2s infinite;
         }
 
-        @@keyframes pulse {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.4; transform: scale(0.8); }
-        }
-
-        .fecha {
-            color: #ccc;
+        .date {
+            color: #999999;
             font-size: 12px;
-            margin-bottom: 28px;
+            margin-bottom: 24px;
         }
 
-        .mensaje {
+        .message {
             background: #fffbf0;
             border: 1px solid #ffe082;
             border-radius: 10px;
             padding: 12px 20px;
             font-size: 13px;
-            color: #b07d00;
-            margin-bottom: 32px;
+            color: #9a6b00;
+            margin-bottom: 28px;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
         }
 
         .btn {
             font-size: 15px;
-            padding: 14px 40px;
+            padding: 13px 28px;
             background: #1a73e8;
             color: white;
-            border: none;
             border-radius: 50px;
-            cursor: pointer;
             text-decoration: none;
             display: inline-block;
             font-weight: 600;
-            transition: all 0.2s;
-            box-shadow: 0 4px 15px rgba(26,115,232,0.3);
+            border: none;
+            cursor: pointer;
         }
 
-        .btn:hover {
-            background: #1558b0;
-            transform: translateY(-1px);
-            box-shadow: 0 6px 20px rgba(26,115,232,0.4);
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        @@media print {
+            body {
+                background: white;
+            }
+
+            .actions {
+                display: none;
+            }
+
+            .ticket {
+                box-shadow: none;
+                border: 1px solid #cccccc;
+            }
         }
     </style>
 </head>
+
 <body>
-    <div class="card">
-        <div class="logo">⚡ ShiftManagement</div>
-        <div class="divider"></div>
-        <div class="label">Tu turno es</div>
-        <div class="turno">@Model</div>
-        <div class="estado">
-            <span class="dot"></span>
-            Imprimiendo ticket...
-        </div>
-        <div class="fecha">📅 @DateTime.Now.ToString("dd/MM/yyyy") &nbsp;|&nbsp; 🕐 @DateTime.Now.ToString("HH:mm")</div>
-        <div class="mensaje">🔔 Por favor espera a ser llamado</div>
-        <a href="/Turn" class="btn">← Nuevo turno</a>
+<div class="ticket">
+    <div class="brand">Clínica - Gestión de turnos</div>
+
+    <div class="divider"></div>
+
+    @if (TempData["Info"] != null)
+    {
+    <div class="message">
+        @TempData["Info"]
     </div>
+    }
+
+    <div class="label">Tu turno es</div>
+
+    <div class="code">@Model.Code</div>
+
+    <div class="details">
+        <div><strong>Paciente:</strong> @Model.User?.Fullname</div>
+        <div><strong>Documento:</strong> @Model.User?.DocumentType - @Model.User?.DocumentNumber</div>
+        <div><strong>Tipo de atención:</strong> @ticketTypeText</div>
+        <div><strong>Sala:</strong> @Model.WaitingRoom?.Name</div>
+    </div>
+
+    <div class="status">
+        <span class="dot"></span>
+        Turno en espera
+    </div>
+
+    <div class="date">
+        @DateTime.Now.ToString("dd/MM/yyyy") | @DateTime.Now.ToString("HH:mm")
+    </div>
+
+    <div class="message">
+        Por favor espera a ser llamado en la sala de espera.
+    </div>
+
+    <div class="actions">
+        <button type="button" class="btn" onclick="window.print()">
+            Imprimir ticket
+        </button>
+
+        <a href="/Turn" class="btn btn-secondary">
+            Nuevo turno
+        </a>
+    </div>
+</div>
 </body>
 </html>

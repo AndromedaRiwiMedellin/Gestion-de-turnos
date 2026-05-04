@@ -1,4 +1,7 @@
 # Build results
+bin/
+obj/
+[Bb]uild/
 [Dd]ebug/
 [Rr]elease/
 x64/
@@ -6,25 +9,98 @@ x86/
 [Aa][Rr][Mm]/
 [Aa][Rr][Mm]64/
 
+# .NET generated files
+*.user
+*.rsuser
+*.suo
+*.userosscache
+*.sln.docstates
+*.nupkg
+*.snupkg
+project.assets.json
+project.nuget.cache
+*.nuget.dgspec.json
+*.nuget.g.props
+*.nuget.g.targets
+
+# Visual Studio
 .vs/
+*.vssscc
 *.vspscc
 *.pidb
 *.svclog
 *.scc
 
+# Rider / JetBrains
+.idea/
+*.sln.iml
 
+# VS Code
+.vscode/
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
 
+# OS files
 .DS_Store
 Thumbs.db
 ehthumbs.db
+Desktop.ini
 
+# Logs
+*.log
+logs/
+LogFiles/
 
+# Test results
+TestResults/
+[Tt]est[Rr]esult*/
+*.trx
+*.coverage
+*.coveragexml
+coverage/
+coverage.cobertura.xml
 
+# Publish output
+publish/
+wwwroot/uploads/
+wwwroot/files/
 
+# Entity Framework temporary files
+Migrations/*Snapshot.cs.bak
 
+# Environment variables and secrets
+.env
+.env.*
+*.env
 
+# Local app settings with secrets
+appsettings.Development.json
+appsettings.Local.json
+appsettings.Production.json
+
+# IMPORTANT:
+# If appsettings.json contains real credentials, do not commit it.
+# Prefer using appsettings.example.json instead.
+# Uncomment this line if you want to ignore appsettings.json too:
+# appsettings.json
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# NuGet packages
+packages/
+.nuget/
+
+# Docker
+docker-compose.override.yml
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
 *.swp
+*.swo
