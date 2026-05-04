@@ -1,0 +1,144 @@
+@model string
+@{ Layout = null; }
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Tu Turno - @Model</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #f5f7fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .card {
+            background: white;
+            border-radius: 24px;
+            padding: 50px 70px;
+            text-align: center;
+            box-shadow: 0 4px 30px rgba(0,0,0,0.08);
+            max-width: 420px;
+            width: 90%;
+            border: 1px solid #eee;
+        }
+
+        .logo {
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            color: #1a73e8;
+            text-transform: uppercase;
+            margin-bottom: 30px;
+        }
+
+        .divider {
+            height: 1px;
+            background: #f0f0f0;
+            margin-bottom: 24px;
+        }
+
+        .label {
+            font-size: 12px;
+            color: #bbb;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .turno {
+            font-size: 96px;
+            font-weight: 800;
+            color: #1a1a2e;
+            line-height: 1;
+            letter-spacing: -2px;
+            margin-bottom: 24px;
+        }
+
+        .estado {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #f0f7ff;
+            color: #1a73e8;
+            border: 1px solid #d0e4ff;
+            border-radius: 50px;
+            padding: 8px 20px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            background: #1a73e8;
+            border-radius: 50%;
+            animation: pulse 1.2s infinite;
+        }
+
+        @@keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.8); }
+        }
+
+        .fecha {
+            color: #ccc;
+            font-size: 12px;
+            margin-bottom: 28px;
+        }
+
+        .mensaje {
+            background: #fffbf0;
+            border: 1px solid #ffe082;
+            border-radius: 10px;
+            padding: 12px 20px;
+            font-size: 13px;
+            color: #b07d00;
+            margin-bottom: 32px;
+        }
+
+        .btn {
+            font-size: 15px;
+            padding: 14px 40px;
+            background: #1a73e8;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            font-weight: 600;
+            transition: all 0.2s;
+            box-shadow: 0 4px 15px rgba(26,115,232,0.3);
+        }
+
+        .btn:hover {
+            background: #1558b0;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(26,115,232,0.4);
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="logo">⚡ ShiftManagement</div>
+        <div class="divider"></div>
+        <div class="label">Tu turno es</div>
+        <div class="turno">@Model</div>
+        <div class="estado">
+            <span class="dot"></span>
+            Imprimiendo ticket...
+        </div>
+        <div class="fecha">📅 @DateTime.Now.ToString("dd/MM/yyyy") &nbsp;|&nbsp; 🕐 @DateTime.Now.ToString("HH:mm")</div>
+        <div class="mensaje">🔔 Por favor espera a ser llamado</div>
+        <a href="/Turn" class="btn">← Nuevo turno</a>
+    </div>
+</body>
+</html>
