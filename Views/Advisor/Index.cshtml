@@ -4,9 +4,23 @@
     var waiting = ViewBag.WaitingTurns as List<Turn> ?? new();
     var current = ViewBag.CurrentTurn as Turn;
     var history = ViewBag.History as List<Turn> ?? new();
+
+    var currentBorderColor = current?.Status == Status.InProgress ? "#198754"
+                           : current?.Status == Status.Called      ? "#ffc107"
+                           : "#6c757d";
 }
 
-<h2 class="mb-4">Panel del Asesor</h2>
+<div class="d-flex align-items-center mb-4">
+    <h4 class="mb-0 fw-bold">Panel del Asesor</h4>
+    @if (current != null)
+    {
+        <span class="ms-3 badge bg-success">En sesión</span>
+    }
+    else
+    {
+        <span class="ms-3 badge bg-secondary">Libre</span>
+    }
+</div>
 
 @if (TempData["Error"] != null)
 {
@@ -25,27 +39,27 @@
 
 <div class="row g-4">
 
-    <!-- Cola de espera -->
+    @* Queue *@
     <div class="col-md-4">
-        <div class="card h-100">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <span class="fw-semibold">Cola de espera</span>
-                <span class="badge bg-secondary">@waiting.Count</span>
+        <div class="card h-100 shadow-sm border-start border-3 border-primary">
+            <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
+                <span class="section-label">Cola de espera</span>
+                <span class="badge bg-primary rounded-pill">@waiting.Count</span>
             </div>
             <div class="card-body">
                 <form method="post" asp-action="CallNext">
                     <button type="submit" class="btn btn-primary w-100 mb-3" @(current != null ? "disabled" : "")>
-                        Llamar siguiente
+                        &#9658; Llamar siguiente
                     </button>
                 </form>
 
                 @if (waiting.Any())
                 {
-                    <ul class="list-group">
+                    <ul class="list-group list-group-flush">
                         @foreach (var t in waiting)
                         {
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <span class="fw-bold">@t.Code</span>
+                            <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                <span class="fw-bold fs-5">@t.Code</span>
                                 <small class="text-muted">@t.CreatedAt.ToLocalTime().ToString("HH:mm")</small>
                             </li>
                         }
@@ -53,68 +67,72 @@
                 }
                 else
                 {
-                    <p class="text-muted text-center mt-3">Sin turnos en espera.</p>
+                    <p class="text-muted text-center mt-3 small">Sin turnos en espera.</p>
                 }
             </div>
         </div>
     </div>
 
-    <!-- Turno actual -->
+    @* Current turn *@
     <div class="col-md-4">
-        <div class="card h-100">
-            <div class="card-header fw-semibold">Turno actual</div>
+        <div class="card h-100 shadow-sm border-start border-3" style="border-left-color: @currentBorderColor !important">
+            <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
+                <span class="section-label">Turno actual</span>
+                @if (current?.Status == Status.Called)
+                {
+                    <span class="badge bg-warning text-dark">Llamado</span>
+                }
+                else if (current?.Status == Status.InProgress)
+                {
+                    <span class="badge bg-success">En atención</span>
+                }
+            </div>
             <div class="card-body text-center">
                 @if (current == null)
                 {
-                    <p class="text-muted mt-5">Ningún turno activo.</p>
+                    <p class="text-muted mt-5 small">Ningún turno activo.</p>
                 }
                 else
                 {
-                    <h1 class="display-2 fw-bold text-primary my-3">@current.Code</h1>
+                    <h1 class="display-1 fw-black text-primary my-3">@current.Code</h1>
 
                     @if (current.User != null)
                     {
-                        <div class="text-start border rounded p-2 mb-3 small bg-light">
-                            <div><span class="text-muted">Nombre:</span> <strong>@current.User.Fullname</strong></div>
-                            <div><span class="text-muted">Documento:</span> @current.User.DocumentType — @current.User.DocumentNumber</div>
+                        <div class="text-start border rounded p-3 mb-3 small bg-light">
+                            <div class="mb-1"><span class="text-muted">Nombre:</span> <strong>@current.User.Fullname</strong></div>
+                            <div class="mb-1"><span class="text-muted">Documento:</span> @current.User.DocumentType — @current.User.DocumentNumber</div>
                             @if (!string.IsNullOrWhiteSpace(current.User.Phone))
                             {
-                                <div><span class="text-muted">Teléfono:</span> @current.User.Phone</div>
+                                <div class="mb-1"><span class="text-muted">Teléfono:</span> @current.User.Phone</div>
                             }
                             @if (!string.IsNullOrWhiteSpace(current.User.Email))
                             {
                                 <div><span class="text-muted">Email:</span> @current.User.Email</div>
                             }
                             <a asp-action="EditUser" asp-route-id="@current.User.Id"
-                               class="btn btn-sm btn-outline-secondary mt-2 w-100">Editar usuario</a>
+                               class="btn btn-sm btn-outline-secondary mt-2 w-100">Editar datos</a>
                         </div>
                     }
 
                     @if (current.Status == Status.Called)
                     {
-                        <p class="text-warning fw-semibold mb-3">Llamado</p>
-
                         <form method="post" asp-action="StartAttention" asp-route-id="@current.Id" class="mb-2">
                             <button type="submit" class="btn btn-success w-100">Iniciar atención</button>
                         </form>
-
                         <form method="post" asp-action="CancelTurn" asp-route-id="@current.Id">
                             <button type="submit" class="btn btn-outline-danger w-100">Cancelar turno</button>
                         </form>
                     }
                     else if (current.Status == Status.InProgress)
                     {
-                        <p class="text-success fw-semibold mb-3">En atención</p>
-
                         <form method="post" asp-action="FinishTurn" asp-route-id="@current.Id" class="mb-2">
                             <div class="mb-3 text-start">
-                                <label class="form-label">Comentario (opcional)</label>
-                                <textarea name="message" class="form-control" rows="3"
+                                <label class="form-label small text-muted">Comentario (opcional)</label>
+                                <textarea name="message" class="form-control form-control-sm" rows="2"
                                           placeholder="Observaciones del turno..."></textarea>
                             </div>
                             <button type="submit" class="btn btn-success w-100">Finalizar turno</button>
                         </form>
-
                         <form method="post" asp-action="CancelTurn" asp-route-id="@current.Id">
                             <button type="submit" class="btn btn-outline-danger w-100">Cancelar turno</button>
                         </form>
@@ -124,24 +142,27 @@
         </div>
     </div>
 
-    <!-- Historial -->
+    @* History *@
     <div class="col-md-4">
-        <div class="card h-100">
-            <div class="card-header fw-semibold">Historial de hoy</div>
-            <div class="card-body">
+        <div class="card h-100 shadow-sm border-start border-3 border-secondary">
+            <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
+                <span class="section-label">Historial de hoy</span>
+                <span class="badge bg-secondary rounded-pill">@history.Count</span>
+            </div>
+            <div class="card-body p-0">
                 @if (history.Any())
                 {
-                    <ul class="list-group">
+                    <ul class="list-group list-group-flush">
                         @foreach (var t in history)
                         {
-                            <li class="list-group-item">
-                                <div class="d-flex justify-content-between">
+                            <li class="list-group-item px-3 py-2">
+                                <div class="d-flex justify-content-between align-items-center">
                                     <span class="fw-bold">@t.Code</span>
                                     <small class="text-muted">@t.UpdatedAt.ToLocalTime().ToString("HH:mm")</small>
                                 </div>
                                 @if (!string.IsNullOrWhiteSpace(t.Message))
                                 {
-                                    <small class="text-secondary">@t.Message</small>
+                                    <small class="text-secondary d-block mt-1">@t.Message</small>
                                 }
                             </li>
                         }
@@ -149,7 +170,7 @@
                 }
                 else
                 {
-                    <p class="text-muted text-center mt-3">Sin turnos finalizados hoy.</p>
+                    <p class="text-muted text-center py-4 mb-0 small">Sin turnos finalizados hoy.</p>
                 }
             </div>
         </div>
