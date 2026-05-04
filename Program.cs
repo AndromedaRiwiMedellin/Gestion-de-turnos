@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using ShiftManagement.Data;
+using ShiftManagement.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,7 +18,7 @@ using (var scope = app.Services.CreateScope())
     {
         if (!db.WaitingRooms.Any())
         {
-            var room = new WaitingRoom { Name = "Sala Principal", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow };
+            var room = new WaitingRoom() { Name = "Sala Principal", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow };
             db.WaitingRooms.Add(room);
             db.SaveChanges();
             db.Advisors.Add(new Advisor { Fullname = "Asesor 1", WaitingRoomId = room.Id, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow });
