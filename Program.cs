@@ -11,25 +11,7 @@ builder.Services.AddDbContext<MysqlDbContext>(options =>
 
 var app = builder.Build();
 
-using (var scope = app.Services.CreateScope())
-{
-    var db = scope.ServiceProvider.GetRequiredService<MysqlDbContext>();
-    try
-    {
-        if (!db.WaitingRooms.Any())
-        {
-            var room = new WaitingRoom() { Name = "Sala Principal", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow };
-            db.WaitingRooms.Add(room);
-            db.SaveChanges();
-            db.Advisors.Add(new Advisor { Fullname = "Asesor 1", WaitingRoomId = room.Id, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow });
-            db.SaveChanges();
-        }
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"[Seed] Skipped: {ex.Message}");
-    }
-}
+app.SeedDatabase();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

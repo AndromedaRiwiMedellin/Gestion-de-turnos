@@ -1,8 +1,38 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+@{
+    ViewData["Title"] = "Inicio";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="text-center mt-3 mb-5">
+    <h1 class="display-5 fw-bold">Sistema de Gestión de Turnos</h1>
+    <p class="text-muted">Selecciona una opción para continuar</p>
+</div>
+
+<div class="row g-4 justify-content-center">
+    <div class="col-md-4">
+        <a asp-controller="Turn" asp-action="Index" class="text-decoration-none">
+            <div class="card h-100 border-0 shadow-sm text-center p-4 card-hover">
+                <div class="fs-1 mb-3">🎫</div>
+                <h5 class="fw-bold">Solicitar Turno</h5>
+                <p class="text-muted small mb-0">Obtén tu número de turno para ser atendido</p>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-4">
+        <a asp-controller="WaitingRoom" asp-action="Index" class="text-decoration-none">
+            <div class="card h-100 border-0 shadow-sm text-center p-4 card-hover">
+                <div class="fs-1 mb-3">📺</div>
+                <h5 class="fw-bold">Sala de Espera</h5>
+                <p class="text-muted small mb-0">Pantalla de visualización de turnos en tiempo real</p>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-4">
+        <a asp-controller="Advisor" asp-action="Index" class="text-decoration-none">
+            <div class="card h-100 border-0 shadow-sm text-center p-4 card-hover">
+                <div class="fs-1 mb-3">👤</div>
+                <h5 class="fw-bold">Panel del Asesor</h5>
+                <p class="text-muted small mb-0">Gestiona y atiende los turnos de la cola</p>
+            </div>
+        </a>
+    </div>
 </div>
