@@ -1,0 +1,158 @@
+@using ShiftManagement.Models
+@{
+    ViewData["Title"] = "Panel del Asesor";
+    var waiting = ViewBag.WaitingTurns as List<Turn> ?? new();
+    var current = ViewBag.CurrentTurn as Turn;
+    var history = ViewBag.History as List<Turn> ?? new();
+}
+
+<h2 class="mb-4">Panel del Asesor</h2>
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+@if (TempData["Info"] != null)
+{
+    <div class="alert alert-info alert-dismissible fade show" role="alert">
+        @TempData["Info"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<div class="row g-4">
+
+    <!-- Cola de espera -->
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span class="fw-semibold">Cola de espera</span>
+                <span class="badge bg-secondary">@waiting.Count</span>
+            </div>
+            <div class="card-body">
+                <form method="post" asp-action="CallNext">
+                    <button type="submit" class="btn btn-primary w-100 mb-3" @(current != null ? "disabled" : "")>
+                        Llamar siguiente
+                    </button>
+                </form>
+
+                @if (waiting.Any())
+                {
+                    <ul class="list-group">
+                        @foreach (var t in waiting)
+                        {
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span class="fw-bold">@t.Code</span>
+                                <small class="text-muted">@t.CreatedAt.ToLocalTime().ToString("HH:mm")</small>
+                            </li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <p class="text-muted text-center mt-3">Sin turnos en espera.</p>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Turno actual -->
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-header fw-semibold">Turno actual</div>
+            <div class="card-body text-center">
+                @if (current == null)
+                {
+                    <p class="text-muted mt-5">Ningún turno activo.</p>
+                }
+                else
+                {
+                    <h1 class="display-2 fw-bold text-primary my-3">@current.Code</h1>
+
+                    @if (current.User != null)
+                    {
+                        <div class="text-start border rounded p-2 mb-3 small bg-light">
+                            <div><span class="text-muted">Nombre:</span> <strong>@current.User.Fullname</strong></div>
+                            <div><span class="text-muted">Documento:</span> @current.User.DocumentType — @current.User.DocumentNumber</div>
+                            @if (!string.IsNullOrWhiteSpace(current.User.Phone))
+                            {
+                                <div><span class="text-muted">Teléfono:</span> @current.User.Phone</div>
+                            }
+                            @if (!string.IsNullOrWhiteSpace(current.User.Email))
+                            {
+                                <div><span class="text-muted">Email:</span> @current.User.Email</div>
+                            }
+                            <a asp-action="EditUser" asp-route-id="@current.User.Id"
+                               class="btn btn-sm btn-outline-secondary mt-2 w-100">Editar usuario</a>
+                        </div>
+                    }
+
+                    @if (current.Status == Status.Called)
+                    {
+                        <p class="text-warning fw-semibold mb-3">Llamado</p>
+
+                        <form method="post" asp-action="StartAttention" asp-route-id="@current.Id" class="mb-2">
+                            <button type="submit" class="btn btn-success w-100">Iniciar atención</button>
+                        </form>
+
+                        <form method="post" asp-action="CancelTurn" asp-route-id="@current.Id">
+                            <button type="submit" class="btn btn-outline-danger w-100">Cancelar turno</button>
+                        </form>
+                    }
+                    else if (current.Status == Status.InProgress)
+                    {
+                        <p class="text-success fw-semibold mb-3">En atención</p>
+
+                        <form method="post" asp-action="FinishTurn" asp-route-id="@current.Id" class="mb-2">
+                            <div class="mb-3 text-start">
+                                <label class="form-label">Comentario (opcional)</label>
+                                <textarea name="message" class="form-control" rows="3"
+                                          placeholder="Observaciones del turno..."></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-success w-100">Finalizar turno</button>
+                        </form>
+
+                        <form method="post" asp-action="CancelTurn" asp-route-id="@current.Id">
+                            <button type="submit" class="btn btn-outline-danger w-100">Cancelar turno</button>
+                        </form>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Historial -->
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-header fw-semibold">Historial de hoy</div>
+            <div class="card-body">
+                @if (history.Any())
+                {
+                    <ul class="list-group">
+                        @foreach (var t in history)
+                        {
+                            <li class="list-group-item">
+                                <div class="d-flex justify-content-between">
+                                    <span class="fw-bold">@t.Code</span>
+                                    <small class="text-muted">@t.UpdatedAt.ToLocalTime().ToString("HH:mm")</small>
+                                </div>
+                                @if (!string.IsNullOrWhiteSpace(t.Message))
+                                {
+                                    <small class="text-secondary">@t.Message</small>
+                                }
+                            </li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <p class="text-muted text-center mt-3">Sin turnos finalizados hoy.</p>
+                }
+            </div>
+        </div>
+    </div>
+
+</div>
