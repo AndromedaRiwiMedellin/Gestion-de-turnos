@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using ShiftManagement.Data;
 using ShiftManagement.Models;
+using ShiftManagement.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,6 +9,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<MysqlDbContext>(options =>
     options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),
         ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))));
+builder.Services.AddHostedService<PrintBackgroundService>();
 
 var app = builder.Build();
 
