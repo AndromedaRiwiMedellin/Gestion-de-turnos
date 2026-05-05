@@ -17,9 +17,11 @@ public class WaitingRoomController : Controller
     public async Task<IActionResult> Index()
     {
         var currentTurn = await _context.Turns
+            .Include(t => t.User)
             .Where(t => t.Status == Status.Called || t.Status == Status.InProgress)
             .OrderBy(t => t.CreatedAt)
             .FirstOrDefaultAsync();
+
 
         var queue = await _context.Turns
             .Where(t => t.Status == Status.Waiting)

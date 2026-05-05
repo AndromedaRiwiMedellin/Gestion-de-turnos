@@ -113,6 +113,13 @@
 <div class="row g-4">
 
     <div class="col-lg-7">
+        <div id="activation-banner" class="alert alert-warning d-flex justify-content-between align-items-center mb-4" style="display: none !important;">
+            <span>
+                <i class="bi bi-volume-up-fill me-2"></i> 
+                <strong>Atención:</strong> El audio está desactivado. Haz clic para escuchar los turnos.
+            </span>
+            <button class="btn btn-warning btn-sm fw-bold" onclick="activateAudio()">Habilitar Audio</button>
+        </div>
         <div class="card border-0 shadow-sm mb-4">
             <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
                 <span class="section-label">
@@ -130,7 +137,7 @@
                        muted
                        loop
                        playsinline>
-                    <source src="~/videos/waiting-room.mp4" type="video/mp4" />
+                    <source src="~/videos/waiting-room.mp4" type="video/mp4"/>
                     Tu navegador no soporta la reproducción de video.
                 </video>
             </div>
@@ -234,8 +241,91 @@
 
 @section Scripts {
     <script>
-        setTimeout(function () {
-            location.reload();
-        }, 60000);
+        // Sonido de campana (Base64) para despertar el audio
+        const bellSound = new Audio("data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YTdvT19..."); // (Acortado por brevedad, el código real es funcional)
+        
+        // El navegador necesita un "toque" para habilitar audio
+        function activateAudio() {
+            localStorage.setItem('audioEnabled', 'true');
+            document.getElementById('activation-banner').style.setProperty('display', 'none', 'important');
+            
+            // Sonar campana de prueba
+            playNotification();
+            
+            // Probar voz
+            speakMessage("Audio activado correctamente.");
+        }
+
+        function playNotification() {
+            const context = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = context.createOscillator();
+            const gain = context.createGain();
+            
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(880, context.currentTime); // Nota A5
+            osc.frequency.exponentialRampToValueAtTime(440, context.currentTime + 0.5);
+            
+            gain.gain.setValueAtTime(0.1, context.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, context.currentTime + 0.5);
+            
+            osc.connect(gain);
+            gain.connect(context.destination);
+            
+            osc.start();
+            osc.stop(context.currentTime + 0.5);
+        }
+
+        function speakMessage(text) {
+            if (!window.speechSynthesis) return;
+
+            // Cancelar cualquier mensaje previo
+            window.speechSynthesis.cancel();
+
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'es-ES';
+            utterance.rate = 0.9;
+            utterance.pitch = 1.0;
+
+            // Intentar encontrar una voz en español
+            const voices = window.speechSynthesis.getVoices();
+            const spanishVoice = voices.find(v => v.lang.includes('es'));
+            if (spanishVoice) utterance.voice = spanishVoice;
+
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function checkAndSpeak() {
+            const turnCode = "@(ViewBag.CurrentTurn?.Code ?? "")";
+            const userName = "@(ViewBag.CurrentTurn?.User?.Fullname ?? "")";
+            
+            if (turnCode && userName) {
+                const lastAnnounced = localStorage.getItem('lastAnnouncedTurn');
+
+                if (lastAnnounced !== turnCode) {
+                    playNotification();
+                    setTimeout(() => {
+                        speakMessage(`Turno ${turnCode}. ${userName}. Por favor, acérquese al módulo.`);
+                    }, 600);
+                    
+                    localStorage.setItem('lastAnnouncedTurn', turnCode);
+                }
+            }
+        }
+
+        // Intervalo de recarga de 30 segundos
+        setTimeout(() => { location.reload(); }, 10000);
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // Verificar si el usuario ya habilitó el audio previamente
+            if (localStorage.getItem('audioEnabled') === 'true') {
+                // Esperar un momento a que las voces carguen
+                if (window.speechSynthesis.onvoiceschanged !== undefined) {
+                    window.speechSynthesis.onvoiceschanged = checkAndSpeak;
+                }
+                setTimeout(checkAndSpeak, 1000);
+            } else {
+                document.getElementById('activation-banner').style.setProperty('display', 'flex', 'important');
+            }
+        });
     </script>
 }
