@@ -240,6 +240,50 @@ public class TurnController : Controller
         return RedirectToAction(nameof(Index));
     }
 
+    [HttpPost]
+    public IActionResult PrintTicket(int id)
+    {
+        const string DISPOSITIVO = "/dev/usb/lp0";
+
+        try
+        {
+            var turn = _context.Turns
+                .Include(t => t.User)
+                .Include(t => t.WaitingRoom)
+                .FirstOrDefault(t => t.Id == id);
+
+            if (turn == null) return NotFound();
+
+            using var ms = new System.IO.MemoryStream();
+
+            ms.Write(new byte[] { 0x1B, 0x40 });
+            ms.Write(new byte[] { 0x1B, 0x61, 0x01 });
+            ms.Write(new byte[] { 0x1D, 0x21, 0x00 });
+            ms.Write(System.Text.Encoding.ASCII.GetBytes("========================\n"));
+            ms.Write(System.Text.Encoding.ASCII.GetBytes("  CLINICA - TURNOS\n"));
+            ms.Write(System.Text.Encoding.ASCII.GetBytes("========================\n"));
+            ms.Write(new byte[] { 0x1D, 0x21, 0x22 });
+            ms.Write(System.Text.Encoding.ASCII.GetBytes($"  {turn.Code}  \n"));
+            ms.Write(new byte[] { 0x1D, 0x21, 0x00 });
+            ms.Write(System.Text.Encoding.ASCII.GetBytes("========================\n"));
+            ms.Write(System.Text.Encoding.ASCII.GetBytes($"  {turn.User?.Fullname}\n"));
+            ms.Write(System.Text.Encoding.ASCII.GetBytes($"  {turn.WaitingRoom?.Name}\n"));
+            ms.Write(System.Text.Encoding.ASCII.GetBytes($"  {DateTime.Now:dd/MM/yyyy HH:mm}\n"));
+            ms.Write(System.Text.Encoding.ASCII.GetBytes("  Espere su llamado\n"));
+            ms.Write(System.Text.Encoding.ASCII.GetBytes("========================\n"));
+            ms.Write(System.Text.Encoding.ASCII.GetBytes("\n\n\n"));
+            ms.Write(new byte[] { 0x1D, 0x56, 0x00 });
+
+            System.IO.File.WriteAllBytes(DISPOSITIVO, ms.ToArray());
+
+            return Ok();
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, ex.Message);
+        }
+    }
+
     private async Task<Turn?> GetActiveTurnByUserAsync(int userId)
     {
         return await _context.Turns
