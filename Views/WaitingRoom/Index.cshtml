@@ -112,46 +112,41 @@
 
 <div class="row g-4">
 
-    <div class="col-lg-7">
-        <div class="card border-0 shadow-sm mb-4">
-            <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
-                <span class="section-label">
-                    Contenido informativo
-                </span>
+    @* Left: carousel + last called *@
+    <div class="col-md-7">
 
-                <span class="badge bg-primary">
-                    Sala de espera
-                </span>
-            </div>
-
-            <div class="video-wrapper">
-                <video class="waiting-video"
-                       autoplay
-                       muted
-                       loop
-                       playsinline
-                       controls>
-                    <source src="~/videos/waiting-room.mp4" type="video/mp4" />
-                    Tu navegador no soporta la reproducción de video.
-                </video>
-            </div>
-
-            <div class="video-caption p-3">
-                <p class="text-secondary small mb-0">
-                    Mientras esperas, mantente atento al turno llamado en pantalla.
-                </p>
+        <div id="wrc" class="carousel slide rounded-3 mb-3 overflow-hidden" data-bs-ride="carousel" data-bs-interval="5000">
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <div class="d-flex align-items-center justify-content-center bg-primary text-white" style="height:140px">
+                        <div class="text-center px-4">
+                            <div><strong>Bienvenido</strong> </div>
+                            <small>Gracias por elegirnos. Su turno será atendido pronto.</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <div class="d-flex align-items-center justify-content-center" style="height:140px; background:#1a1a2e;">
+                        <div class="text-center text-white px-4">
+                            <div class="section-label text-secondary mb-2">Turnos en espera</div>
+                            <div class="display-4 fw-black">@Model.Count</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <div class="d-flex align-items-center justify-content-center bg-success text-white" style="height:140px">
+                        <div class="text-center px-4">
+                            <div><strong>Su tiempo importa</strong></div>
+                            <small>Estamos trabajando para atenderle cuanto antes.</small>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
         <div class="card border-0 shadow-sm">
-            <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
-                <span class="section-label">
-                    Últimos llamados
-                </span>
-
-                <span class="badge bg-secondary rounded-pill">
-                    @lastCalledTurns.Count
-                </span>
+            <div class="card-header bg-white border-bottom py-3">
+                <span class="section-label">Últimos llamados</span>
             </div>
 
             <div class="card-body p-0">
