@@ -4,6 +4,9 @@ using ShiftManagement.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.Configure<SmtpSettings>(
+    builder.Configuration.GetSection("SmtpSettings"));
+
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<MysqlDbContext>(options =>
     options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),
