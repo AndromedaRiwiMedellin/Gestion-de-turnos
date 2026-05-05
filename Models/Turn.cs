@@ -6,7 +6,8 @@ public class Turn
 {
     public int Id { get; set; }
     public string Code { get; set; } = string.Empty;
-    public bool IsPrinted { get; set; } = false; // Tracks if the ticket was printed
+    public string Email { get; set; } = string.Empty;  // <- agregado
+    public bool IsPrinted { get; set; } = false;
     public string Message { get; set; } = string.Empty;
     public Status Status { get; set; }
     
@@ -18,8 +19,7 @@ public class Turn
     
     public int WaitingRoomId { get; set; }
     public WaitingRoom WaitingRoom { get; set; } = null!;
-    
- 
+
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 }
