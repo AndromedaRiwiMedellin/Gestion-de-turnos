@@ -230,47 +230,6 @@
 <script>
     let callNextSubmitted = false;
 
-    async function playTurnChangeSound() {
-        try {
-            const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-
-            if (!AudioContextClass) {
-                return;
-            }
-
-            const audioContext = new AudioContextClass();
-
-            if (audioContext.state === "suspended") {
-                await audioContext.resume();
-            }
-
-            function playBeep(startTime, frequency) {
-                const oscillator = audioContext.createOscillator();
-                const gainNode = audioContext.createGain();
-
-                oscillator.type = "sine";
-                oscillator.frequency.setValueAtTime(frequency, startTime);
-
-                gainNode.gain.setValueAtTime(0.65, startTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.001, startTime + 0.35);
-
-                oscillator.connect(gainNode);
-                gainNode.connect(audioContext.destination);
-
-                oscillator.start(startTime);
-                oscillator.stop(startTime + 0.35);
-            }
-
-            const now = audioContext.currentTime;
-
-            playBeep(now, 880);
-            playBeep(now + 0.45, 1040);
-            playBeep(now + 0.90, 880);
-        } catch (error) {
-            console.log("No se pudo reproducir el sonido del cambio de turno.", error);
-        }
-    }
-
     const callNextForm = document.getElementById("callNextForm");
     const callNextButton = document.getElementById("callNextButton");
 
@@ -288,11 +247,7 @@
                 callNextButton.innerText = "Llamando turno...";
             }
 
-            await playTurnChangeSound();
-
-            setTimeout(function () {
-                callNextForm.submit();
-            }, 1200);
+            callNextForm.submit();
         });
     }
 </script>
