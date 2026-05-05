@@ -15,7 +15,17 @@
                 <form asp-controller="Turn" asp-action="RegisterPatient" method="post">
                     @Html.AntiForgeryToken()
 
-                    <div asp-validation-summary="All" class="alert alert-danger py-2 mb-3"></div>
+                    @if (TempData["Error"] != null)
+                    {
+                        <div class="alert alert-danger">
+                            @TempData["Error"]
+                        </div>
+                    }
+
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div asp-validation-summary="All" class="alert alert-danger py-2 mb-3"></div>
+                    }
 
                     <div class="mb-3">
                         <label for="documentType" class="form-label">

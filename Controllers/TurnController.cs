@@ -89,7 +89,9 @@ public class TurnController : Controller
     [HttpGet]
     public async Task<IActionResult> SelectTicket(int userId)
     {
-        User? user = await _context.Users.FindAsync(userId);
+        User? user = await _context.Users
+            .AsNoTracking()
+            .FirstOrDefaultAsync(u => u.Id == userId);
 
         if (user == null)
         {
@@ -107,16 +109,22 @@ public class TurnController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> CreateTicket(int userId, string? ticketType)
     {
-        bool userExists = await _context.Users
+        User? user = await _context.Users
             .AsNoTracking()
-            .AnyAsync(u => u.Id == userId);
+            .FirstOrDefaultAsync(u => u.Id == userId);
 
-        if (!userExists)
+        if (user == null)
         {
             return NotFound();
         }
 
-        Turn? activeTurn = await GetActiveTurnByUserAsync(userId);
+        if (string.IsNullOrWhiteSpace(user.Email))
+        {
+            TempData["Error"] = "El paciente debe tener un correo electrónico registrado antes de generar el turno.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        Turn? activeTurn = await GetActiveTurnByUserAsync(user.Id);
 
         if (activeTurn != null)
         {
@@ -125,6 +133,7 @@ public class TurnController : Controller
         }
 
         WaitingRoom? waitingRoom = await _context.WaitingRooms
+            .AsNoTracking()
             .OrderBy(w => w.Id)
             .FirstOrDefaultAsync();
 
@@ -144,28 +153,56 @@ public class TurnController : Controller
         string normalizedTicketType = NormalizeTicketType(ticketType);
         string code = await GenerateTurnCodeAsync(normalizedTicketType);
 
-        var turn = new Turn
+        DateTime now = DateTime.UtcNow;
+        int waitingStatus = (int)Status.Waiting;
+
+        await _context.Database.ExecuteSqlInterpolatedAsync($@"
+            INSERT INTO Turns
+            (
+                Code,
+                IsPrinted,
+                Message,
+                Status,
+                UserId,
+                WaitingRoomId,
+                Email,
+                CreatedAt,
+                UpdatedAt
+            )
+            VALUES
+            (
+                {code},
+                {false},
+                {string.Empty},
+                {waitingStatus},
+                {user.Id},
+                {waitingRoom.Id},
+                {user.Email},
+                {now},
+                {now}
+            );
+        ");
+
+        Turn? createdTurn = await _context.Turns
+            .AsNoTracking()
+            .Where(t => t.UserId == user.Id && t.Code == code)
+            .OrderByDescending(t => t.CreatedAt)
+            .FirstOrDefaultAsync();
+
+        if (createdTurn == null)
         {
-            Code = code,
-            UserId = userId,
-            WaitingRoomId = waitingRoom.Id,
-            Status = Status.Waiting,
-            IsPrinted = false,
-            Message = string.Empty,
-            CreatedAt = DateTime.UtcNow,
-            UpdatedAt = DateTime.UtcNow
-        };
+            TempData["Error"] = "No se pudo encontrar el turno generado.";
+            return RedirectToAction(nameof(Index));
+        }
 
-        _context.Turns.Add(turn);
-        await _context.SaveChangesAsync();
-
-        return RedirectToAction(nameof(Ticket), new { id = turn.Id });
+        return RedirectToAction(nameof(Ticket), new { id = createdTurn.Id });
     }
 
     [HttpGet]
     public async Task<IActionResult> Ticket(int? id, string? code)
     {
         IQueryable<Turn> query = _context.Turns
+            .AsNoTracking()
             .Include(t => t.User)
             .Include(t => t.WaitingRoom);
 
@@ -206,6 +243,7 @@ public class TurnController : Controller
     private async Task<Turn?> GetActiveTurnByUserAsync(int userId)
     {
         return await _context.Turns
+            .AsNoTracking()
             .Where(t =>
                 t.UserId == userId &&
                 (
@@ -224,10 +262,12 @@ public class TurnController : Controller
         DateTime startDate = DateTime.UtcNow.Date;
         DateTime endDate = startDate.AddDays(1);
 
-        int totalTodayByType = await _context.Turns.CountAsync(t =>
-            t.CreatedAt >= startDate &&
-            t.CreatedAt < endDate &&
-            t.Code.StartsWith(prefix + "-"));
+        int totalTodayByType = await _context.Turns
+            .AsNoTracking()
+            .CountAsync(t =>
+                t.CreatedAt >= startDate &&
+                t.CreatedAt < endDate &&
+                t.Code.StartsWith(prefix + "-"));
 
         return $"{prefix}-{totalTodayByType + 1:D3}";
     }
