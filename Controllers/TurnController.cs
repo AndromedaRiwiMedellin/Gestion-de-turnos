@@ -2,16 +2,19 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ShiftManagement.Data;
 using ShiftManagement.Models;
+using ShiftManagement.Services;
 
 namespace ShiftManagement.Controllers;
 
 public class TurnController : Controller
 {
     private readonly MysqlDbContext _context;
+    private readonly EmailService _emailService;
 
-    public TurnController(MysqlDbContext context)
+    public TurnController(MysqlDbContext context, EmailService emailService)
     {
         _context = context;
+        _emailService = emailService;
     }
 
     [HttpGet]
@@ -82,6 +85,7 @@ public class TurnController : Controller
         }
 
         await _context.SaveChangesAsync();
+        await _emailService.SendEmailRegister(user.Email, user.Fullname);
 
         return RedirectToAction(nameof(SelectTicket), new { userId = user.Id });
     }
@@ -194,6 +198,8 @@ public class TurnController : Controller
             TempData["Error"] = "No se pudo encontrar el turno generado.";
             return RedirectToAction(nameof(Index));
         }
+        
+        
 
         return RedirectToAction(nameof(Ticket), new { id = createdTurn.Id, generated = true });
     }
