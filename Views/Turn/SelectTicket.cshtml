@@ -1,0 +1,216 @@
+@model ShiftManagement.Models.User
+@using ShiftManagement.Models
+
+@{
+    ViewData["Title"] = "Seleccionar tipo de ticket";
+
+    var activeTurn = ViewBag.ActiveTurn as Turn;
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-header fw-semibold">
+                Seleccionar tipo de ticket
+            </div>
+
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <div><strong>Paciente:</strong> @Model.Fullname</div>
+                    <div><strong>Documento:</strong> @Model.DocumentType - @Model.DocumentNumber</div>
+                </div>
+
+                @if (activeTurn != null)
+                {
+                    <div class="alert alert-warning">
+                        Este paciente ya tiene un turno activo:
+                        <strong>@activeTurn.Code</strong>
+                    </div>
+
+                    <a asp-controller="Turn"
+                       asp-action="Ticket"
+                       asp-route-id="@activeTurn.Id"
+                       class="btn btn-primary w-100">
+                        Ver ticket activo
+                    </a>
+                }
+                else
+                {
+                    <form id="ticketForm"
+                          asp-controller="Turn"
+                          asp-action="CreateTicket"
+                          method="post">
+                        @Html.AntiForgeryToken()
+
+                        <input type="hidden" name="userId" value="@Model.Id" />
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="card p-3 h-100">
+                                    <div class="form-check">
+                                        <input class="form-check-input"
+                                               type="radio"
+                                               name="ticketType"
+                                               value="GENERAL"
+                                               checked />
+                                        <span class="form-check-label fw-semibold">
+                                            Consulta general
+                                        </span>
+                                    </div>
+                                    <small class="text-muted">
+                                        Atención normal del paciente.
+                                    </small>
+                                </label>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="card p-3 h-100">
+                                    <div class="form-check">
+                                        <input class="form-check-input"
+                                               type="radio"
+                                               name="ticketType"
+                                               value="PRIORITY" />
+                                        <span class="form-check-label fw-semibold">
+                                            Urgencias
+                                        </span>
+                                    </div>
+                                    <small class="text-muted">
+                                        Atención prioritaria.
+                                    </small>
+                                </label>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="card p-3 h-100">
+                                    <div class="form-check">
+                                        <input class="form-check-input"
+                                               type="radio"
+                                               name="ticketType"
+                                               value="LABORATORY" />
+                                        <span class="form-check-label fw-semibold">
+                                            Laboratorio
+                                        </span>
+                                    </div>
+                                    <small class="text-muted">
+                                        Toma de muestras o resultados.
+                                    </small>
+                                </label>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="card p-3 h-100">
+                                    <div class="form-check">
+                                        <input class="form-check-input"
+                                               type="radio"
+                                               name="ticketType"
+                                               value="MEDICAL_APPOINTMENT" />
+                                        <span class="form-check-label fw-semibold">
+                                            Cita médica
+                                        </span>
+                                    </div>
+                                    <small class="text-muted">
+                                        Atención con profesional médico.
+                                    </small>
+                                </label>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="card p-3 h-100">
+                                    <div class="form-check">
+                                        <input class="form-check-input"
+                                               type="radio"
+                                               name="ticketType"
+                                               value="INFORMATION" />
+                                        <span class="form-check-label fw-semibold">
+                                            Información
+                                        </span>
+                                    </div>
+                                    <small class="text-muted">
+                                        Orientación o servicio al usuario.
+                                    </small>
+                                </label>
+                            </div>
+                        </div>
+
+                        <button id="generateTicketButton"
+                                type="submit"
+                                class="btn btn-success w-100 mt-4">
+                            Generar turno
+                        </button>
+                    </form>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let formAlreadySubmitted = false;
+
+    async function playTicketSound() {
+        try {
+            const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+
+            if (!AudioContextClass) {
+                return;
+            }
+
+            const audioContext = new AudioContextClass();
+
+            if (audioContext.state === "suspended") {
+                await audioContext.resume();
+            }
+
+            function playBeep(startTime, frequency) {
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+
+                oscillator.type = "sine";
+                oscillator.frequency.setValueAtTime(frequency, startTime);
+
+                gainNode.gain.setValueAtTime(0.65, startTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, startTime + 0.35);
+
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+
+                oscillator.start(startTime);
+                oscillator.stop(startTime + 0.35);
+            }
+
+            const now = audioContext.currentTime;
+
+            playBeep(now, 880);
+            playBeep(now + 0.45, 1040);
+            playBeep(now + 0.90, 880);
+        } catch (error) {
+            console.log("No se pudo reproducir el sonido del turno.", error);
+        }
+    }
+
+    const ticketForm = document.getElementById("ticketForm");
+    const generateTicketButton = document.getElementById("generateTicketButton");
+
+    if (ticketForm) {
+        ticketForm.addEventListener("submit", async function (event) {
+            if (formAlreadySubmitted) {
+                return;
+            }
+
+            event.preventDefault();
+
+            formAlreadySubmitted = true;
+
+            if (generateTicketButton) {
+                generateTicketButton.disabled = true;
+                generateTicketButton.innerText = "Generando turno...";
+            }
+
+            await playTicketSound();
+
+            setTimeout(function () {
+                ticketForm.submit();
+            }, 1200);
+        });
+    }
+</script>

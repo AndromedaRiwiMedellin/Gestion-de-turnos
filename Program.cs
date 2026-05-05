@@ -1,9 +1,24 @@
+using Microsoft.EntityFrameworkCore;
+using ShiftManagement.Data;
+using ShiftManagement.Models;
+using ShiftManagement.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+builder.Services.AddTransient<EmailService>();
+
+builder.Services.Configure<SmtpSettings>(
+    builder.Configuration.GetSection("SmtpSettings"));
+
 builder.Services.AddControllersWithViews();
+builder.Services.AddDbContext<MysqlDbContext>(options =>
+    options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),
+        ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))));
+builder.Services.AddHostedService<PrintBackgroundService>();
 
 var app = builder.Build();
+
+app.SeedDatabase();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

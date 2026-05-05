@@ -1,6 +1,140 @@
 ﻿@{
-    ViewData["Title"] = "Privacy Policy";
+    ViewData["Title"] = "Privacidad";
 }
-<h1>@ViewData["Title"]</h1>
 
-<p>Use this page to detail your site's privacy policy.</p>
+<section class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-body p-5">
+                        <span class="badge text-bg-primary mb-3 px-3 py-2">
+                            Política de privacidad
+                        </span>
+
+                        <h1 class="display-6 fw-bold text-dark mb-3">
+                            Privacidad y protección de datos del paciente
+                        </h1>
+
+                        <p class="lead text-secondary mb-0">
+                            Este sistema de gestión de turnos para entorno clínico está diseñado para registrar
+                            únicamente la información necesaria para identificar al paciente, generar su turno
+                            y facilitar el proceso de atención dentro de la institución.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-body p-4">
+                                <h5 class="fw-bold mb-3">
+                                    Información registrada
+                                </h5>
+
+                                <p class="text-secondary mb-3">
+                                    El sistema puede registrar datos básicos del paciente, tales como:
+                                </p>
+
+                                <ul class="text-secondary mb-0">
+                                    <li>Tipo de documento</li>
+                                    <li>Número de documento</li>
+                                    <li>Nombre completo</li>
+                                    <li>Teléfono de contacto</li>
+                                    <li>Correo electrónico</li>
+                                    <li>Turno asignado</li>
+                                    <li>Estado del turno</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-body p-4">
+                                <h5 class="fw-bold mb-3">
+                                    Uso de la información
+                                </h5>
+
+                                <p class="text-secondary mb-3">
+                                    Los datos registrados se utilizan exclusivamente para:
+                                </p>
+
+                                <ul class="text-secondary mb-0">
+                                    <li>Identificar al paciente en el sistema</li>
+                                    <li>Evitar registros duplicados</li>
+                                    <li>Generar y asociar turnos</li>
+                                    <li>Mostrar el turno en la sala de espera</li>
+                                    <li>Facilitar la atención por parte del asesor</li>
+                                    <li>Mantener trazabilidad básica del proceso</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-body p-4">
+                                <h5 class="fw-bold mb-3">
+                                    Acceso a los datos
+                                </h5>
+
+                                <p class="text-secondary mb-0">
+                                    La información del paciente debe ser consultada únicamente por personal autorizado
+                                    dentro del contexto de atención. El sistema no debe utilizar estos datos para fines
+                                    externos al proceso de gestión de turnos.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-body p-4">
+                                <h5 class="fw-bold mb-3">
+                                    Seguridad del sistema
+                                </h5>
+
+                                <p class="text-secondary mb-0">
+                                    Se recomienda proteger el acceso a la base de datos, evitar publicar credenciales
+                                    en el repositorio y mantener las configuraciones sensibles fuera del control de
+                                    versiones.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card border-0 bg-light mt-4">
+                    <div class="card-body p-4">
+                        <h5 class="fw-bold mb-3">
+                            Responsabilidad del usuario
+                        </h5>
+
+                        <p class="text-secondary mb-0">
+                            El personal que utilice el sistema debe ingresar información verídica, respetar la
+                            confidencialidad de los pacientes y usar la plataforma únicamente para apoyar el flujo
+                            de atención clínica.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between flex-wrap gap-3 mt-4">
+                    <a asp-controller="Home"
+                       asp-action="Index"
+                       class="btn btn-outline-secondary">
+                        Volver al inicio
+                    </a>
+
+                    <a asp-controller="Turn"
+                       asp-action="Index"
+                       class="btn btn-primary">
+                        Solicitar turno
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>

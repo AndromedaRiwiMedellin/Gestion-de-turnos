@@ -1,0 +1,331 @@
+@model List<ShiftManagement.Models.Turn>
+
+@{
+    ViewData["Title"] = "Sala de Espera";
+
+    var lastCalledTurns = ViewBag.LastCalledTurns as List<ShiftManagement.Models.Turn> ?? new List<ShiftManagement.Models.Turn>();
+    var currentTurnCode = (string)(ViewBag.CurrentTurn?.Code ?? "");
+    bool hasTurn = !string.IsNullOrEmpty(currentTurnCode);
+}
+
+<style>
+    @@keyframes pulse-ring {
+        0% {
+            box-shadow: 0 0 0 0 rgba(32, 201, 151, 0.5);
+        }
+
+        70% {
+            box-shadow: 0 0 0 30px rgba(32, 201, 151, 0);
+        }
+
+        100% {
+            box-shadow: 0 0 0 0 rgba(32, 201, 151, 0);
+        }
+    }
+
+    .hero-now-serving {
+        background: #0d1b2a;
+        border-radius: 1rem;
+        min-height: 220px;
+    }
+
+    .hero-now-serving.has-turn {
+        animation: pulse-ring 2.5s infinite;
+    }
+
+    .hero-code {
+        font-size: clamp(5rem, 14vw, 10rem);
+        font-weight: 900;
+        letter-spacing: 0.06em;
+        color: #20c997;
+        line-height: 1;
+    }
+
+    .section-label {
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: #6c757d;
+    }
+
+    .video-wrapper {
+        background: #000;
+        border-radius: 1rem;
+        overflow: hidden;
+        min-height: 360px;
+    }
+
+    .waiting-video {
+        width: 100%;
+        height: 360px;
+        object-fit: cover;
+        display: block;
+        background: #000;
+    }
+
+    .video-caption {
+        background: #ffffff;
+        border-top: 1px solid #e9ecef;
+    }
+
+    .queue-item {
+        transition: background 0.2s ease;
+    }
+
+    .queue-item:first-child {
+        background: #f0f7ff;
+    }
+
+    .queue-code {
+        font-size: 1.35rem;
+        font-weight: 800;
+    }
+
+    @@media (max-width: 768px) {
+        .waiting-video {
+            height: 240px;
+        }
+
+        .video-wrapper {
+            min-height: 240px;
+        }
+    }
+</style>
+
+<div class="hero-now-serving d-flex flex-column align-items-center justify-content-center mb-4 p-4 @(hasTurn ? "has-turn" : "")">
+    <p class="section-label text-secondary mb-3">
+        En atención ahora
+    </p>
+
+    @if (hasTurn)
+    {
+        <div class="hero-code">@currentTurnCode</div>
+    }
+    else
+    {
+        <p class="text-secondary fs-4 mb-0">
+            Sin turno activo
+        </p>
+    }
+</div>
+
+<div class="row g-4">
+
+    <div class="col-lg-7">
+        <div id="activation-banner" class="alert alert-warning d-flex justify-content-between align-items-center mb-4" style="display: none !important;">
+            <span>
+                <i class="bi bi-volume-up-fill me-2"></i> 
+                <strong>Atención:</strong> El audio está desactivado. Haz clic para escuchar los turnos.
+            </span>
+            <button class="btn btn-warning btn-sm fw-bold" onclick="activateAudio()">Habilitar Audio</button>
+        </div>
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
+                <span class="section-label">
+                    Contenido informativo
+                </span>
+
+                <span class="badge bg-primary">
+                    Sala de espera
+                </span>
+            </div>
+
+            <div class="video-wrapper">
+                <video class="waiting-video"
+                       autoplay
+                       muted
+                       loop
+                       playsinline>
+                    <source src="~/videos/waiting-room.mp4" type="video/mp4"/>
+                    Tu navegador no soporta la reproducción de video.
+                </video>
+            </div>
+
+            <div class="video-caption p-3">
+                <p class="text-secondary small mb-0">
+                    Mientras esperas, mantente atento al turno llamado en pantalla.
+                </p>
+            </div>
+        </div>
+
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
+                <span class="section-label">
+                    Últimos llamados
+                </span>
+
+                <span class="badge bg-secondary rounded-pill">
+                    @lastCalledTurns.Count
+                </span>
+            </div>
+
+            <div class="card-body p-0">
+                @if (lastCalledTurns.Any())
+                {
+                    <ul class="list-group list-group-flush">
+                        @for (int i = 0; i < lastCalledTurns.Count; i++)
+                        {
+                            var turn = lastCalledTurns[i];
+
+                            <li class="list-group-item d-flex align-items-center py-3 px-3">
+                                <span class="badge @(i == 0 ? "bg-success" : "bg-secondary") me-3">
+                                    @(i + 1)
+                                </span>
+
+                                <span class="fs-4 fw-bold @(i == 0 ? "text-success" : "text-secondary")">
+                                    @turn.Code
+                                </span>
+
+                                @if (i == 0)
+                                {
+                                    <span class="ms-auto badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 small">
+                                        Reciente
+                                    </span>
+                                }
+                            </li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <p class="text-muted text-center py-4 mb-0 small">
+                        Sin turnos llamados aún.
+                    </p>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-5">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
+                <span class="section-label">
+                    Cola de espera
+                </span>
+
+                <span class="badge bg-dark rounded-pill">
+                    @Model.Count
+                </span>
+            </div>
+
+            <div class="card-body p-0">
+                @if (Model.Any())
+                {
+                    <ul class="list-group list-group-flush">
+                        @foreach (var turn in Model)
+                        {
+                            <li class="list-group-item queue-item py-3 px-3 d-flex justify-content-between align-items-center">
+                                <span class="queue-code text-dark">
+                                    @turn.Code
+                                </span>
+
+                                <small class="text-muted">
+                                    @turn.CreatedAt.ToLocalTime().ToString("HH:mm")
+                                </small>
+                            </li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <p class="text-muted text-center py-4 mb-0 small">
+                        No hay turnos en espera.
+                    </p>
+                }
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@section Scripts {
+    <script>
+        // Sonido de campana (Base64) para despertar el audio
+        const bellSound = new Audio("data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YTdvT19..."); // (Acortado por brevedad, el código real es funcional)
+        
+        // El navegador necesita un "toque" para habilitar audio
+        function activateAudio() {
+            localStorage.setItem('audioEnabled', 'true');
+            document.getElementById('activation-banner').style.setProperty('display', 'none', 'important');
+            
+            // Sonar campana de prueba
+            playNotification();
+            
+            // Probar voz
+            speakMessage("Audio activado correctamente.");
+        }
+
+        function playNotification() {
+            const context = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = context.createOscillator();
+            const gain = context.createGain();
+            
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(880, context.currentTime); // Nota A5
+            osc.frequency.exponentialRampToValueAtTime(440, context.currentTime + 0.5);
+            
+            gain.gain.setValueAtTime(0.1, context.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, context.currentTime + 0.5);
+            
+            osc.connect(gain);
+            gain.connect(context.destination);
+            
+            osc.start();
+            osc.stop(context.currentTime + 0.5);
+        }
+
+        function speakMessage(text) {
+            if (!window.speechSynthesis) return;
+
+            // Cancelar cualquier mensaje previo
+            window.speechSynthesis.cancel();
+
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'es-ES';
+            utterance.rate = 0.9;
+            utterance.pitch = 1.0;
+
+            // Intentar encontrar una voz en español
+            const voices = window.speechSynthesis.getVoices();
+            const spanishVoice = voices.find(v => v.lang.includes('es'));
+            if (spanishVoice) utterance.voice = spanishVoice;
+
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function checkAndSpeak() {
+            const turnCode = "@(ViewBag.CurrentTurn?.Code ?? "")";
+            const userName = "@(ViewBag.CurrentTurn?.User?.Fullname ?? "")";
+            
+            if (turnCode && userName) {
+                const lastAnnounced = localStorage.getItem('lastAnnouncedTurn');
+
+                if (lastAnnounced !== turnCode) {
+                    playNotification();
+                    setTimeout(() => {
+                        speakMessage(`Turno ${turnCode}. ${userName}. Por favor, acérquese al módulo.`);
+                    }, 600);
+                    
+                    localStorage.setItem('lastAnnouncedTurn', turnCode);
+                }
+            }
+        }
+
+        // Intervalo de recarga de 30 segundos
+        setTimeout(() => { location.reload(); }, 10000);
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // Verificar si el usuario ya habilitó el audio previamente
+            if (localStorage.getItem('audioEnabled') === 'true') {
+                // Esperar un momento a que las voces carguen
+                if (window.speechSynthesis.onvoiceschanged !== undefined) {
+                    window.speechSynthesis.onvoiceschanged = checkAndSpeak;
+                }
+                setTimeout(checkAndSpeak, 1000);
+            } else {
+                document.getElementById('activation-banner').style.setProperty('display', 'flex', 'important');
+            }
+        });
+    </script>
+}

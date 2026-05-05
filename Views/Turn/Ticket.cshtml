@@ -1,0 +1,293 @@
+@model ShiftManagement.Models.Turn
+
+@{
+Layout = null;
+
+string prefix = Model.Code.Split("-")[0];
+
+string ticketTypeText = prefix switch
+{
+"U" => "Urgencias",
+"L" => "Laboratorio",
+"C" => "Cita médica",
+"I" => "Información",
+_ => "Consulta general"
+};
+
+bool playSound = Context.Request.Query["generated"] == "true";
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <title>Turno @Model.Code</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #f5f7fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .ticket {
+            width: 92%;
+            max-width: 460px;
+            background: white;
+            border-radius: 24px;
+            padding: 48px 56px;
+            text-align: center;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.08);
+            border: 1px solid #eeeeee;
+        }
+
+        .brand {
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            color: #1a73e8;
+            text-transform: uppercase;
+            margin-bottom: 28px;
+        }
+
+        .divider {
+            height: 1px;
+            background: #eeeeee;
+            margin-bottom: 24px;
+        }
+
+        .label {
+            font-size: 12px;
+            color: #999999;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .code {
+            font-size: 88px;
+            font-weight: 800;
+            color: #1a1a2e;
+            line-height: 1;
+            margin-bottom: 24px;
+        }
+
+        .details {
+            background: #f8f9fa;
+            border-radius: 14px;
+            padding: 16px 18px;
+            text-align: left;
+            font-size: 14px;
+            color: #333333;
+            margin-bottom: 20px;
+        }
+
+        .details div {
+            margin-bottom: 6px;
+        }
+
+        .status {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #f0f7ff;
+            color: #1a73e8;
+            border: 1px solid #d0e4ff;
+            border-radius: 50px;
+            padding: 8px 20px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            background: #1a73e8;
+            border-radius: 50%;
+        }
+
+        .date {
+            color: #999999;
+            font-size: 12px;
+            margin-bottom: 24px;
+        }
+
+        .message {
+            background: #fffbf0;
+            border: 1px solid #ffe082;
+            border-radius: 10px;
+            padding: 12px 20px;
+            font-size: 13px;
+            color: #9a6b00;
+            margin-bottom: 28px;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            font-size: 15px;
+            padding: 13px 28px;
+            background: #1a73e8;
+            color: white;
+            border-radius: 50px;
+            text-decoration: none;
+            display: inline-block;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .btn-warning {
+            background: #f0ad4e;
+            color: #212529;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        @@media print {
+            body {
+                background: white;
+            }
+
+            .actions {
+                display: none;
+            }
+
+            .ticket {
+                box-shadow: none;
+                border: 1px solid #cccccc;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div class="ticket">
+    <div class="brand">Clínica - Gestión de turnos</div>
+
+    <div class="divider"></div>
+
+    @if (TempData["Info"] != null)
+    {
+    <div class="message">
+        @TempData["Info"]
+    </div>
+    }
+
+    <div class="label">Tu turno es</div>
+
+    <div class="code">@Model.Code</div>
+
+    <div class="details">
+        <div><strong>Paciente:</strong> @Model.User?.Fullname</div>
+        <div><strong>Documento:</strong> @Model.User?.DocumentType - @Model.User?.DocumentNumber</div>
+        <div><strong>Tipo de atención:</strong> @ticketTypeText</div>
+        <div><strong>Sala:</strong> @Model.WaitingRoom?.Name</div>
+    </div>
+
+    <div class="status">
+        <span class="dot"></span>
+        Turno en espera
+    </div>
+
+    <div class="date">
+        @DateTime.Now.ToString("dd/MM/yyyy") | @DateTime.Now.ToString("HH:mm")
+    </div>
+
+    <div class="message">
+        Por favor espera a ser llamado en la sala de espera.
+    </div>
+
+    <div class="actions">
+        <button type="button" class="btn" id="btnImprimir" onclick="imprimirTermica(@Model.Id)">
+            🖨️ Imprimir ticket
+        </button>
+
+        @if (playSound)
+        {
+        <button type="button" class="btn btn-warning" onclick="playTicketSound()">
+            Reproducir sonido
+        </button>
+        }
+
+        <a href="/Turn" class="btn btn-secondary">
+            Nuevo turno
+        </a>
+    </div>
+</div>
+
+<script>
+    async function imprimirTermica(id) {
+        const btn = document.getElementById('btnImprimir');
+        btn.disabled = true;
+        btn.textContent = 'Imprimiendo...';
+
+        try {
+            const res = await fetch(`/Turn/PrintTicket/${id}`, { method: 'POST' });
+            if (res.ok) {
+                btn.textContent = '✅ Impreso';
+            } else {
+                btn.textContent = '❌ Error';
+                btn.disabled = false;
+                alert('Error al imprimir: ' + await res.text());
+            }
+        } catch (e) {
+            btn.textContent = '❌ Error';
+            btn.disabled = false;
+            alert('No se pudo conectar con la impresora');
+        }
+    }
+
+    function playTicketSound() {
+        try {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+
+            oscillator.type = "sine";
+            oscillator.frequency.setValueAtTime(880, audioContext.currentTime);
+            gainNode.gain.setValueAtTime(0.25, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.7);
+
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            oscillator.start();
+            oscillator.stop(audioContext.currentTime + 0.7);
+        } catch (error) {
+            console.log("No se pudo reproducir el sonido del turno.", error);
+        }
+    }
+
+    @if (playSound)
+    {
+    <text>
+    document.addEventListener("DOMContentLoaded", function () {
+        playTicketSound();
+    });
+    </text>
+    }
+</script>
+</body>
+</html>

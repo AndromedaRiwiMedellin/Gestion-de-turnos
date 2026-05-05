@@ -1,0 +1,107 @@
+@using ShiftManagement.Models
+
+@{
+    ViewData["Title"] = "Registro de paciente";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-7">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-primary text-white fw-semibold">
+                Módulo de entrada - Registro del paciente
+            </div>
+
+            <div class="card-body p-4">
+                <form asp-controller="Turn" asp-action="RegisterPatient" method="post">
+                    @Html.AntiForgeryToken()
+
+                    @if (TempData["Error"] != null)
+                    {
+                        <div class="alert alert-danger">
+                            @TempData["Error"]
+                        </div>
+                    }
+
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div asp-validation-summary="All" class="alert alert-danger py-2 mb-3"></div>
+                    }
+
+                    <div class="mb-3">
+                        <label for="documentType" class="form-label">
+                            Tipo de documento
+                        </label>
+
+                        <select id="documentType"
+                                name="documentType"
+                                class="form-select"
+                                required>
+                            <option value="@DocumentType.NationalId">Cédula</option>
+                            <option value="@DocumentType.Passport">Pasaporte</option>
+                            <option value="@DocumentType.ForeignId">Cédula de extranjería</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="documentNumber" class="form-label">
+                            Número de documento
+                        </label>
+
+                        <input id="documentNumber"
+                               type="text"
+                               name="documentNumber"
+                               class="form-control"
+                               placeholder="Ej: 1020304050"
+                               required
+                               maxlength="50" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="fullname" class="form-label">
+                            Nombre completo
+                        </label>
+
+                        <input id="fullname"
+                               type="text"
+                               name="fullname"
+                               class="form-control"
+                               placeholder="Nombre completo del paciente"
+                               required
+                               maxlength="200" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="phone" class="form-label">
+                            Teléfono
+                        </label>
+
+                        <input id="phone"
+                               type="text"
+                               name="phone"
+                               class="form-control"
+                               placeholder="Teléfono de contacto"
+                               maxlength="20" />
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="email" class="form-label">
+                            Correo electrónico
+                        </label>
+
+                        <input id="email"
+                               type="email"
+                               name="email"
+                               class="form-control"
+                               placeholder="correo@ejemplo.com"
+                               required
+                               maxlength="200" />
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">
+                        Continuar
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
