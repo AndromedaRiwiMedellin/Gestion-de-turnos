@@ -220,12 +220,9 @@
                 Imprimir ticket
             </button>
 
-            @if (playSound)
-            {
-                <button type="button" class="btn btn-warning" onclick="playTicketSound()">
-                    Reproducir sonido
-                </button>
-            }
+            <button type="button" class="btn btn-warning" onclick="playTicketSound()">
+                Probar sonido
+            </button>
 
             <a href="/Turn" class="btn btn-secondary">
                 Nuevo turno
@@ -234,24 +231,43 @@
     </div>
 
     <script>
-        function playTicketSound() {
+        async function playTicketSound() {
             try {
-                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const AudioContextClass = window.AudioContext || window.webkitAudioContext;
 
-                const oscillator = audioContext.createOscillator();
-                const gainNode = audioContext.createGain();
+                if (!AudioContextClass) {
+                    console.log("El navegador no soporta AudioContext.");
+                    return;
+                }
 
-                oscillator.type = "sine";
-                oscillator.frequency.setValueAtTime(880, audioContext.currentTime);
+                const audioContext = new AudioContextClass();
 
-                gainNode.gain.setValueAtTime(0.25, audioContext.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.7);
+                if (audioContext.state === "suspended") {
+                    await audioContext.resume();
+                }
 
-                oscillator.connect(gainNode);
-                gainNode.connect(audioContext.destination);
+                function playBeep(startTime, frequency) {
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
 
-                oscillator.start();
-                oscillator.stop(audioContext.currentTime + 0.7);
+                    oscillator.type = "sine";
+                    oscillator.frequency.setValueAtTime(frequency, startTime);
+
+                    gainNode.gain.setValueAtTime(0.65, startTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.001, startTime + 0.35);
+
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+
+                    oscillator.start(startTime);
+                    oscillator.stop(startTime + 0.35);
+                }
+
+                const now = audioContext.currentTime;
+
+                playBeep(now, 880);
+                playBeep(now + 0.45, 1040);
+                playBeep(now + 0.90, 880);
             } catch (error) {
                 console.log("No se pudo reproducir el sonido del turno.", error);
             }
@@ -261,7 +277,9 @@
         {
             <text>
                 document.addEventListener("DOMContentLoaded", function () {
-                    playTicketSound();
+                    setTimeout(function () {
+                        playTicketSound();
+                    }, 500);
                 });
             </text>
         }
