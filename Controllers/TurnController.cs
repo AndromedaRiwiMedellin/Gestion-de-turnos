@@ -199,7 +199,7 @@ public class TurnController : Controller
             return RedirectToAction(nameof(Index));
         }
         
-        
+        await _emailService.SendEmailTicket(user.Email, user.Fullname, code);
 
         return RedirectToAction(nameof(Ticket), new { id = createdTurn.Id, generated = true });
     }
