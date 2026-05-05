@@ -36,7 +36,10 @@
                 }
                 else
                 {
-                    <form asp-controller="Turn" asp-action="CreateTicket" method="post">
+                    <form id="ticketForm"
+                          asp-controller="Turn"
+                          asp-action="CreateTicket"
+                          method="post">
                         @Html.AntiForgeryToken()
 
                         <input type="hidden" name="userId" value="@Model.Id" />
@@ -129,7 +132,9 @@
                             </div>
                         </div>
 
-                        <button type="submit" class="btn btn-success w-100 mt-4">
+                        <button id="generateTicketButton"
+                                type="submit"
+                                class="btn btn-success w-100 mt-4">
                             Generar turno
                         </button>
                     </form>
@@ -138,3 +143,74 @@
         </div>
     </div>
 </div>
+
+<script>
+    let formAlreadySubmitted = false;
+
+    async function playTicketSound() {
+        try {
+            const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+
+            if (!AudioContextClass) {
+                return;
+            }
+
+            const audioContext = new AudioContextClass();
+
+            if (audioContext.state === "suspended") {
+                await audioContext.resume();
+            }
+
+            function playBeep(startTime, frequency) {
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+
+                oscillator.type = "sine";
+                oscillator.frequency.setValueAtTime(frequency, startTime);
+
+                gainNode.gain.setValueAtTime(0.65, startTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, startTime + 0.35);
+
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+
+                oscillator.start(startTime);
+                oscillator.stop(startTime + 0.35);
+            }
+
+            const now = audioContext.currentTime;
+
+            playBeep(now, 880);
+            playBeep(now + 0.45, 1040);
+            playBeep(now + 0.90, 880);
+        } catch (error) {
+            console.log("No se pudo reproducir el sonido del turno.", error);
+        }
+    }
+
+    const ticketForm = document.getElementById("ticketForm");
+    const generateTicketButton = document.getElementById("generateTicketButton");
+
+    if (ticketForm) {
+        ticketForm.addEventListener("submit", async function (event) {
+            if (formAlreadySubmitted) {
+                return;
+            }
+
+            event.preventDefault();
+
+            formAlreadySubmitted = true;
+
+            if (generateTicketButton) {
+                generateTicketButton.disabled = true;
+                generateTicketButton.innerText = "Generando turno...";
+            }
+
+            await playTicketSound();
+
+            setTimeout(function () {
+                ticketForm.submit();
+            }, 1200);
+        });
+    }
+</script>
