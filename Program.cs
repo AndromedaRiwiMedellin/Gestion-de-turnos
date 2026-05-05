@@ -1,8 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using ShiftManagement.Data;
 using ShiftManagement.Models;
+using ShiftManagement.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddTransient<EmailService>();
 
 builder.Services.Configure<SmtpSettings>(
     builder.Configuration.GetSection("SmtpSettings"));
