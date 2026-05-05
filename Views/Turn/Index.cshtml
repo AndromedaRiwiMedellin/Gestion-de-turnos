@@ -1,25 +1,31 @@
 @using ShiftManagement.Models
 
 @{
-ViewData["Title"] = "Registro de paciente";
+    ViewData["Title"] = "Registro de paciente";
 }
 
 <div class="row justify-content-center">
     <div class="col-md-7">
-        <div class="card shadow-sm">
-            <div class="card-header fw-semibold">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-primary text-white fw-semibold">
                 Módulo de entrada - Registro del paciente
             </div>
 
-            <div class="card-body">
+            <div class="card-body p-4">
                 <form asp-controller="Turn" asp-action="RegisterPatient" method="post">
                     @Html.AntiForgeryToken()
 
-                    <div asp-validation-summary="All" class="text-danger mb-3"></div>
+                    <div asp-validation-summary="All" class="alert alert-danger py-2 mb-3"></div>
 
                     <div class="mb-3">
-                        <label class="form-label">Tipo de documento</label>
-                        <select name="documentType" class="form-select" required>
+                        <label for="documentType" class="form-label">
+                            Tipo de documento
+                        </label>
+
+                        <select id="documentType"
+                                name="documentType"
+                                class="form-select"
+                                required>
                             <option value="@DocumentType.NationalId">Cédula</option>
                             <option value="@DocumentType.Passport">Pasaporte</option>
                             <option value="@DocumentType.ForeignId">Cédula de extranjería</option>
@@ -27,8 +33,12 @@ ViewData["Title"] = "Registro de paciente";
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label">Número de documento</label>
-                        <input type="text"
+                        <label for="documentNumber" class="form-label">
+                            Número de documento
+                        </label>
+
+                        <input id="documentNumber"
+                               type="text"
                                name="documentNumber"
                                class="form-control"
                                placeholder="Ej: 1020304050"
@@ -37,8 +47,12 @@ ViewData["Title"] = "Registro de paciente";
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label">Nombre completo</label>
-                        <input type="text"
+                        <label for="fullname" class="form-label">
+                            Nombre completo
+                        </label>
+
+                        <input id="fullname"
+                               type="text"
                                name="fullname"
                                class="form-control"
                                placeholder="Nombre completo del paciente"
@@ -47,20 +61,29 @@ ViewData["Title"] = "Registro de paciente";
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label">Teléfono</label>
-                        <input type="text"
+                        <label for="phone" class="form-label">
+                            Teléfono
+                        </label>
+
+                        <input id="phone"
+                               type="text"
                                name="phone"
                                class="form-control"
                                placeholder="Teléfono de contacto"
                                maxlength="20" />
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Correo electrónico</label>
-                        <input type="email"
+                    <div class="mb-4">
+                        <label for="email" class="form-label">
+                            Correo electrónico
+                        </label>
+
+                        <input id="email"
+                               type="email"
                                name="email"
                                class="form-control"
                                placeholder="correo@ejemplo.com"
+                               required
                                maxlength="200" />
                     </div>
 

@@ -39,6 +39,11 @@ public class TurnController : Controller
             ModelState.AddModelError(nameof(fullname), "El nombre completo es obligatorio.");
         }
 
+        if (string.IsNullOrWhiteSpace(email))
+        {
+            ModelState.AddModelError(nameof(email), "El correo electrónico es obligatorio.");
+        }
+
         if (!ModelState.IsValid)
         {
             return View("Index");
@@ -47,7 +52,7 @@ public class TurnController : Controller
         string cleanDocumentNumber = documentNumber!.Trim();
         string cleanFullname = fullname!.Trim();
         string cleanPhone = phone?.Trim() ?? string.Empty;
-        string cleanEmail = email?.Trim() ?? string.Empty;
+        string cleanEmail = email!.Trim();
 
         User? user = await _context.Users.FirstOrDefaultAsync(u =>
             u.DocumentType == documentType &&
@@ -102,14 +107,16 @@ public class TurnController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> CreateTicket(int userId, string? ticketType)
     {
-        User? user = await _context.Users.FindAsync(userId);
+        bool userExists = await _context.Users
+            .AsNoTracking()
+            .AnyAsync(u => u.Id == userId);
 
-        if (user == null)
+        if (!userExists)
         {
             return NotFound();
         }
 
-        Turn? activeTurn = await GetActiveTurnByUserAsync(user.Id);
+        Turn? activeTurn = await GetActiveTurnByUserAsync(userId);
 
         if (activeTurn != null)
         {
@@ -140,7 +147,7 @@ public class TurnController : Controller
         var turn = new Turn
         {
             Code = code,
-            UserId = user.Id,
+            UserId = userId,
             WaitingRoomId = waitingRoom.Id,
             Status = Status.Waiting,
             IsPrinted = false,
