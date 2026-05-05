@@ -1,20 +1,20 @@
 @model ShiftManagement.Models.Turn
 
 @{
-    Layout = null;
+Layout = null;
 
-    string prefix = Model.Code.Split("-")[0];
+string prefix = Model.Code.Split("-")[0];
 
-    string ticketTypeText = prefix switch
-    {
-        "U" => "Urgencias",
-        "L" => "Laboratorio",
-        "C" => "Cita médica",
-        "I" => "Información",
-        _ => "Consulta general"
-    };
+string ticketTypeText = prefix switch
+{
+"U" => "Urgencias",
+"L" => "Laboratorio",
+"C" => "Cita médica",
+"I" => "Información",
+_ => "Consulta general"
+};
 
-    bool playSound = Context.Request.Query["generated"] == "true";
+bool playSound = Context.Request.Query["generated"] == "true";
 }
 
 <!DOCTYPE html>
@@ -161,6 +161,11 @@
             color: #212529;
         }
 
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
         @@media print {
             body {
                 background: white;
@@ -179,110 +184,110 @@
 </head>
 
 <body>
-    <div class="ticket">
-        <div class="brand">Clínica - Gestión de turnos</div>
+<div class="ticket">
+    <div class="brand">Clínica - Gestión de turnos</div>
 
-        <div class="divider"></div>
+    <div class="divider"></div>
 
-        @if (TempData["Info"] != null)
-        {
-            <div class="message">
-                @TempData["Info"]
-            </div>
-        }
+    @if (TempData["Info"] != null)
+    {
+    <div class="message">
+        @TempData["Info"]
+    </div>
+    }
 
-        <div class="label">Tu turno es</div>
+    <div class="label">Tu turno es</div>
 
-        <div class="code">@Model.Code</div>
+    <div class="code">@Model.Code</div>
 
-        <div class="details">
-            <div><strong>Paciente:</strong> @Model.User?.Fullname</div>
-            <div><strong>Documento:</strong> @Model.User?.DocumentType - @Model.User?.DocumentNumber</div>
-            <div><strong>Tipo de atención:</strong> @ticketTypeText</div>
-            <div><strong>Sala:</strong> @Model.WaitingRoom?.Name</div>
-        </div>
-
-        <div class="status">
-            <span class="dot"></span>
-            Turno en espera
-        </div>
-
-        <div class="date">
-            @DateTime.Now.ToString("dd/MM/yyyy") | @DateTime.Now.ToString("HH:mm")
-        </div>
-
-        <div class="message">
-            Por favor espera a ser llamado en la sala de espera.
-        </div>
-
-        <div class="actions">
-            <button type="button" class="btn" onclick="window.print()">
-                Imprimir ticket
-            </button>
-
-            <button type="button" class="btn btn-warning" onclick="playTicketSound()">
-                Probar sonido
-            </button>
-
-            <a href="/Turn" class="btn btn-secondary">
-                Nuevo turno
-            </a>
-        </div>
+    <div class="details">
+        <div><strong>Paciente:</strong> @Model.User?.Fullname</div>
+        <div><strong>Documento:</strong> @Model.User?.DocumentType - @Model.User?.DocumentNumber</div>
+        <div><strong>Tipo de atención:</strong> @ticketTypeText</div>
+        <div><strong>Sala:</strong> @Model.WaitingRoom?.Name</div>
     </div>
 
-    <script>
-        async function playTicketSound() {
-            try {
-                const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    <div class="status">
+        <span class="dot"></span>
+        Turno en espera
+    </div>
 
-                if (!AudioContextClass) {
-                    console.log("El navegador no soporta AudioContext.");
-                    return;
-                }
+    <div class="date">
+        @DateTime.Now.ToString("dd/MM/yyyy") | @DateTime.Now.ToString("HH:mm")
+    </div>
 
-                const audioContext = new AudioContextClass();
+    <div class="message">
+        Por favor espera a ser llamado en la sala de espera.
+    </div>
 
-                if (audioContext.state === "suspended") {
-                    await audioContext.resume();
-                }
-
-                function playBeep(startTime, frequency) {
-                    const oscillator = audioContext.createOscillator();
-                    const gainNode = audioContext.createGain();
-
-                    oscillator.type = "sine";
-                    oscillator.frequency.setValueAtTime(frequency, startTime);
-
-                    gainNode.gain.setValueAtTime(0.65, startTime);
-                    gainNode.gain.exponentialRampToValueAtTime(0.001, startTime + 0.35);
-
-                    oscillator.connect(gainNode);
-                    gainNode.connect(audioContext.destination);
-
-                    oscillator.start(startTime);
-                    oscillator.stop(startTime + 0.35);
-                }
-
-                const now = audioContext.currentTime;
-
-                playBeep(now, 880);
-                playBeep(now + 0.45, 1040);
-                playBeep(now + 0.90, 880);
-            } catch (error) {
-                console.log("No se pudo reproducir el sonido del turno.", error);
-            }
-        }
+    <div class="actions">
+        <button type="button" class="btn" id="btnImprimir" onclick="imprimirTermica(@Model.Id)">
+            🖨️ Imprimir ticket
+        </button>
 
         @if (playSound)
         {
-            <text>
-                document.addEventListener("DOMContentLoaded", function () {
-                    setTimeout(function () {
-                        playTicketSound();
-                    }, 500);
-                });
-            </text>
+        <button type="button" class="btn btn-warning" onclick="playTicketSound()">
+            Reproducir sonido
+        </button>
         }
-    </script>
+
+        <a href="/Turn" class="btn btn-secondary">
+            Nuevo turno
+        </a>
+    </div>
+</div>
+
+<script>
+    async function imprimirTermica(id) {
+        const btn = document.getElementById('btnImprimir');
+        btn.disabled = true;
+        btn.textContent = 'Imprimiendo...';
+
+        try {
+            const res = await fetch(`/Turn/PrintTicket/${id}`, { method: 'POST' });
+            if (res.ok) {
+                btn.textContent = '✅ Impreso';
+            } else {
+                btn.textContent = '❌ Error';
+                btn.disabled = false;
+                alert('Error al imprimir: ' + await res.text());
+            }
+        } catch (e) {
+            btn.textContent = '❌ Error';
+            btn.disabled = false;
+            alert('No se pudo conectar con la impresora');
+        }
+    }
+
+    function playTicketSound() {
+        try {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+
+            oscillator.type = "sine";
+            oscillator.frequency.setValueAtTime(880, audioContext.currentTime);
+            gainNode.gain.setValueAtTime(0.25, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.7);
+
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            oscillator.start();
+            oscillator.stop(audioContext.currentTime + 0.7);
+        } catch (error) {
+            console.log("No se pudo reproducir el sonido del turno.", error);
+        }
+    }
+
+    @if (playSound)
+    {
+    <text>
+    document.addEventListener("DOMContentLoaded", function () {
+        playTicketSound();
+    });
+    </text>
+    }
+</script>
 </body>
 </html>
