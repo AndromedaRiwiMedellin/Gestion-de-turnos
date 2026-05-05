@@ -195,7 +195,7 @@ public class TurnController : Controller
             return RedirectToAction(nameof(Index));
         }
 
-        return RedirectToAction(nameof(Ticket), new { id = createdTurn.Id });
+        return RedirectToAction(nameof(Ticket), new { id = createdTurn.Id, generated = true });
     }
 
     [HttpGet]
