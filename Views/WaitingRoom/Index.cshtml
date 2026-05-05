@@ -1,6 +1,7 @@
 @model List<ShiftManagement.Models.Turn>
 
 @{
+    Layout = null;
     ViewData["Title"] = "Sala de Espera";
 
     var lastCalledTurns = ViewBag.LastCalledTurns as List<ShiftManagement.Models.Turn> ?? new List<ShiftManagement.Models.Turn>();
@@ -8,238 +9,261 @@
     bool hasTurn = !string.IsNullOrEmpty(currentTurnCode);
 }
 
-<style>
-    @@keyframes pulse-ring {
-        0% {
-            box-shadow: 0 0 0 0 rgba(32, 201, 151, 0.5);
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - ShiftManagement</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            background-color: #f8f9fa;
+        }
+        .full-center-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        @@keyframes pulse-ring {
+            0% {
+                box-shadow: 0 0 0 0 rgba(32, 201, 151, 0.5);
+            }
+
+            70% {
+                box-shadow: 0 0 0 30px rgba(32, 201, 151, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(32, 201, 151, 0);
+            }
         }
 
-        70% {
-            box-shadow: 0 0 0 30px rgba(32, 201, 151, 0);
+        .hero-now-serving {
+            background: #0d1b2a;
+            border-radius: 1rem;
+            min-height: 220px;
         }
 
-        100% {
-            box-shadow: 0 0 0 0 rgba(32, 201, 151, 0);
+        .hero-now-serving.has-turn {
+            animation: pulse-ring 2.5s infinite;
         }
-    }
 
-    .hero-now-serving {
-        background: #0d1b2a;
-        border-radius: 1rem;
-        min-height: 220px;
-    }
+        .hero-code {
+            font-size: clamp(5rem, 14vw, 10rem);
+            font-weight: 900;
+            letter-spacing: 0.06em;
+            color: #20c997;
+            line-height: 1;
+        }
 
-    .hero-now-serving.has-turn {
-        animation: pulse-ring 2.5s infinite;
-    }
-
-    .hero-code {
-        font-size: clamp(5rem, 14vw, 10rem);
-        font-weight: 900;
-        letter-spacing: 0.06em;
-        color: #20c997;
-        line-height: 1;
-    }
-
-    .section-label {
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        font-size: 0.8rem;
-        font-weight: 700;
-        color: #6c757d;
-    }
-
-    .video-wrapper {
-        background: #000;
-        border-radius: 1rem;
-        overflow: hidden;
-        min-height: 360px;
-    }
-
-    .waiting-video {
-        width: 100%;
-        height: 360px;
-        object-fit: cover;
-        display: block;
-        background: #000;
-    }
-
-    .video-caption {
-        background: #ffffff;
-        border-top: 1px solid #e9ecef;
-    }
-
-    .queue-item {
-        transition: background 0.2s ease;
-    }
-
-    .queue-item:first-child {
-        background: #f0f7ff;
-    }
-
-    .queue-code {
-        font-size: 1.35rem;
-        font-weight: 800;
-    }
-
-    @@media (max-width: 768px) {
-        .waiting-video {
-            height: 240px;
+        .section-label {
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #6c757d;
         }
 
         .video-wrapper {
-            min-height: 240px;
+            background: #000;
+            border-radius: 1rem;
+            overflow: hidden;
+            min-height: 360px;
         }
-    }
-</style>
 
-<div class="hero-now-serving d-flex flex-column align-items-center justify-content-center mb-4 p-4 @(hasTurn ? "has-turn" : "")">
-    <p class="section-label text-secondary mb-3">
-        En atención ahora
-    </p>
+        .waiting-video {
+            width: 100%;
+            height: 360px;
+            object-fit: cover;
+            display: block;
+            background: #000;
+        }
 
-    @if (hasTurn)
-    {
-        <div class="hero-code">@currentTurnCode</div>
-    }
-    else
-    {
-        <p class="text-secondary fs-4 mb-0">
-            Sin turno activo
-        </p>
-    }
-</div>
+        .video-caption {
+            background: #ffffff;
+            border-top: 1px solid #e9ecef;
+        }
 
-<div class="row g-4">
+        .queue-item {
+            transition: background 0.2s ease;
+        }
 
-    <div class="col-lg-7">
-        <div id="activation-banner" class="alert alert-warning d-flex justify-content-between align-items-center mb-4" style="display: none !important;">
-            <span>
-                <i class="bi bi-volume-up-fill me-2"></i> 
-                <strong>Atención:</strong> El audio está desactivado. Haz clic para escuchar los turnos.
-            </span>
-            <button class="btn btn-warning btn-sm fw-bold" onclick="activateAudio()">Habilitar Audio</button>
-        </div>
-        <div class="card border-0 shadow-sm mb-4">
-            <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
-                <span class="section-label">
-                    Contenido informativo
-                </span>
+        .queue-item:first-child {
+            background: #f0f7ff;
+        }
 
-                <span class="badge bg-primary">
-                    Sala de espera
-                </span>
-            </div>
+        .queue-code {
+            font-size: 1.35rem;
+            font-weight: 800;
+        }
 
-            <div class="video-wrapper">
-                <video class="waiting-video"
-                       autoplay
-                       muted
-                       loop
-                       playsinline>
-                    <source src="~/videos/waiting-room.mp4" type="video/mp4"/>
-                    Tu navegador no soporta la reproducción de video.
-                </video>
-            </div>
+        @@media (max-width: 768px) {
+            .waiting-video {
+                height: 240px;
+            }
 
-            <div class="video-caption p-3">
-                <p class="text-secondary small mb-0">
-                    Mientras esperas, mantente atento al turno llamado en pantalla.
+            .video-wrapper {
+                min-height: 240px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="full-center-container">
+        <div class="container">
+            <div class="hero-now-serving d-flex flex-column align-items-center justify-content-center mb-4 p-4 @(hasTurn ? "has-turn" : "")">
+                <p class="section-label text-secondary mb-3">
+                    En atención ahora
                 </p>
-            </div>
-        </div>
 
-        <div class="card border-0 shadow-sm">
-            <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
-                <span class="section-label">
-                    Últimos llamados
-                </span>
-
-                <span class="badge bg-secondary rounded-pill">
-                    @lastCalledTurns.Count
-                </span>
-            </div>
-
-            <div class="card-body p-0">
-                @if (lastCalledTurns.Any())
+                @if (hasTurn)
                 {
-                    <ul class="list-group list-group-flush">
-                        @for (int i = 0; i < lastCalledTurns.Count; i++)
-                        {
-                            var turn = lastCalledTurns[i];
-
-                            <li class="list-group-item d-flex align-items-center py-3 px-3">
-                                <span class="badge @(i == 0 ? "bg-success" : "bg-secondary") me-3">
-                                    @(i + 1)
-                                </span>
-
-                                <span class="fs-4 fw-bold @(i == 0 ? "text-success" : "text-secondary")">
-                                    @turn.Code
-                                </span>
-
-                                @if (i == 0)
-                                {
-                                    <span class="ms-auto badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 small">
-                                        Reciente
-                                    </span>
-                                }
-                            </li>
-                        }
-                    </ul>
+                    <div class="hero-code">@currentTurnCode</div>
                 }
                 else
                 {
-                    <p class="text-muted text-center py-4 mb-0 small">
-                        Sin turnos llamados aún.
+                    <p class="text-secondary fs-4 mb-0">
+                        Sin turno activo
                     </p>
                 }
+            </div>
+
+            <div class="row g-4">
+
+                <div class="col-lg-7">
+                    <div id="activation-banner" class="alert alert-warning d-flex justify-content-between align-items-center mb-4" style="display: none !important;">
+                        <span>
+                            <i class="bi bi-volume-up-fill me-2"></i> 
+                            <strong>Atención:</strong> El audio está desactivado. Haz clic para escuchar los turnos.
+                        </span>
+                        <button class="btn btn-warning btn-sm fw-bold" onclick="activateAudio()">Habilitar Audio</button>
+                    </div>
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
+                            <span class="section-label">
+                                Contenido informativo
+                            </span>
+
+                            <span class="badge bg-primary">
+                                Sala de espera
+                            </span>
+                        </div>
+
+                        <div class="video-wrapper">
+                            <video class="waiting-video"
+                                   autoplay
+                                   muted
+                                   loop
+                                   playsinline>
+                                <source src="~/videos/waiting-room.mp4" type="video/mp4"/>
+                                Tu navegador no soporta la reproducción de video.
+                            </video>
+                        </div>
+
+                        <div class="video-caption p-3">
+                            <p class="text-secondary small mb-0">
+                                Mientras esperas, mantente atento al turno llamado en pantalla.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
+                            <span class="section-label">
+                                Últimos llamados
+                            </span>
+
+                            <span class="badge bg-secondary rounded-pill">
+                                @lastCalledTurns.Count
+                            </span>
+                        </div>
+
+                        <div class="card-body p-0">
+                            @if (lastCalledTurns.Any())
+                            {
+                                <ul class="list-group list-group-flush">
+                                    @for (int i = 0; i < lastCalledTurns.Count; i++)
+                                    {
+                                        var turn = lastCalledTurns[i];
+
+                                        <li class="list-group-item d-flex align-items-center py-3 px-3">
+                                            <span class="badge @(i == 0 ? "bg-success" : "bg-secondary") me-3">
+                                                @(i + 1)
+                                            </span>
+
+                                            <span class="fs-4 fw-bold @(i == 0 ? "text-success" : "text-secondary")">
+                                                @turn.Code
+                                            </span>
+
+                                            @if (i == 0)
+                                            {
+                                                <span class="ms-auto badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 small">
+                                                    Reciente
+                                                </span>
+                                            }
+                                        </li>
+                                    }
+                                </ul>
+                            }
+                            else
+                            {
+                                <p class="text-muted text-center py-4 mb-0 small">
+                                    Sin turnos llamados aún.
+                                </p>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-5">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
+                            <span class="section-label">
+                                Cola de espera
+                            </span>
+
+                            <span class="badge bg-dark rounded-pill">
+                                @Model.Count
+                            </span>
+                        </div>
+
+                        <div class="card-body p-0">
+                            @if (Model.Any())
+                            {
+                                <ul class="list-group list-group-flush">
+                                    @foreach (var turn in Model)
+                                    {
+                                        <li class="list-group-item queue-item py-3 px-3 d-flex justify-content-between align-items-center">
+                                            <span class="queue-code text-dark">
+                                                @turn.Code
+                                            </span>
+
+                                            <small class="text-muted">
+                                                @turn.CreatedAt.ToLocalTime().ToString("HH:mm")
+                                            </small>
+                                        </li>
+                                    }
+                                </ul>
+                            }
+                            else
+                            {
+                                <p class="text-muted text-center py-4 mb-0 small">
+                                    No hay turnos en espera.
+                                </p>
+                            }
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
 
-    <div class="col-lg-5">
-        <div class="card border-0 shadow-sm h-100">
-            <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
-                <span class="section-label">
-                    Cola de espera
-                </span>
-
-                <span class="badge bg-dark rounded-pill">
-                    @Model.Count
-                </span>
-            </div>
-
-            <div class="card-body p-0">
-                @if (Model.Any())
-                {
-                    <ul class="list-group list-group-flush">
-                        @foreach (var turn in Model)
-                        {
-                            <li class="list-group-item queue-item py-3 px-3 d-flex justify-content-between align-items-center">
-                                <span class="queue-code text-dark">
-                                    @turn.Code
-                                </span>
-
-                                <small class="text-muted">
-                                    @turn.CreatedAt.ToLocalTime().ToString("HH:mm")
-                                </small>
-                            </li>
-                        }
-                    </ul>
-                }
-                else
-                {
-                    <p class="text-muted text-center py-4 mb-0 small">
-                        No hay turnos en espera.
-                    </p>
-                }
-            </div>
-        </div>
-    </div>
-
-</div>
-
-@section Scripts {
     <script>
         // Sonido de campana (Base64) para despertar el audio
         const bellSound = new Audio("data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YTdvT19..."); // (Acortado por brevedad, el código real es funcional)
@@ -328,4 +352,5 @@
             }
         });
     </script>
-}
+</body>
+</html>
