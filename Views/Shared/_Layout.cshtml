@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="~/ShiftManagement.styles.css" asp-append-version="true" />
 </head>
 
-<body class="bg-light">
+<body class="bg-light d-flex flex-column h-100">
     <header>
         <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm mb-4">
             <div class="container">
@@ -45,36 +45,9 @@
                         <li class="nav-item">
                             <a class="nav-link"
                                asp-area=""
-                               asp-controller="Turn"
-                               asp-action="Index">
-                                Solicitar turno
-                            </a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link"
-                               asp-area=""
-                               asp-controller="WaitingRoom"
-                               asp-action="Index">
-                                Sala de espera
-                            </a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link"
-                               asp-area=""
                                asp-controller="Advisor"
                                asp-action="Index">
                                 Asesor
-                            </a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a class="btn btn-outline-primary btn-sm ms-lg-2"
-                               asp-area=""
-                               asp-controller="Home"
-                               asp-action="Privacy">
-                                Privacidad
                             </a>
                         </li>
                     </ul>
@@ -83,7 +56,7 @@
         </nav>
     </header>
 
-    <main role="main" class="container pb-5">
+    <main role="main" class="container flex-shrink-0 pb-5">
         @RenderBody()
     </main>
 
