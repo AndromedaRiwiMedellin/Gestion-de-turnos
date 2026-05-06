@@ -27,7 +27,7 @@
             display: flex;
             flex-direction: column;
             height: 100vh;
-            padding: 1.5rem;
+            padding: 3rem;
             gap: 1.5rem;
         }
         .main-content-row {
@@ -63,26 +63,56 @@
         .hero-now-serving {
             background: #0d1b2a;
             border-radius: 1.5rem;
-            padding: 1.5rem;
+            padding: 2.5rem 1.5rem;
             flex-shrink: 0;
+            aspect-ratio: 1 / 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            max-width: 65vh;
         }
 
         .hero-now-serving.has-turn {
             animation: pulse-ring 2.5s infinite;
         }
 
+        .real-time-clock {
+            color: #0d1b2a;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        #clock-time {
+            font-size: 4rem;
+            font-weight: 800;
+            line-height: 1;
+            display: block;
+        }
+
+        #clock-date {
+            font-size: 1.25rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #6c757d;
+            margin-top: 0.5rem;
+            display: block;
+        }
+
         .hero-code {
-            font-size: clamp(4rem, 12vh, 8rem);
+            font-size: clamp(4rem, 15vh, 10rem);
             font-weight: 900;
             letter-spacing: 0.06em;
-            color: #20c997;
+            color: #f8f9fa;
             line-height: 1;
         }
 
         .section-label {
             text-transform: uppercase;
-            letter-spacing: 0.08em;
-            font-size: 0.8rem;
+            letter-spacing: 0.15em;
+            font-size: 1rem;
             font-weight: 700;
             color: #6c757d;
         }
@@ -91,7 +121,6 @@
             background: #000;
             border-radius: 1.5rem 1.5rem 0 0;
             overflow: hidden;
-            flex: 1;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -99,8 +128,8 @@
 
         .waiting-video {
             width: 100%;
-            height: 100%;
-            object-fit: cover;
+            height: auto;
+            max-height: 70vh;
             display: block;
             background: #000;
         }
@@ -139,27 +168,14 @@
     </style>
 </head>
 <body>
-    <div class="full-center-container">
-        <div class="hero-now-serving d-flex flex-column align-items-center justify-content-center @(hasTurn ? "has-turn" : "")">
-            <p class="section-label text-secondary mb-2">
-                En atención ahora
-            </p>
-
-            @if (hasTurn)
-            {
-                <div class="hero-code">@currentTurnCode</div>
-            }
-            else
-            {
-                <p class="text-secondary fs-4 mb-0">
-                    Sin turno activo
-                </p>
-            }
+    <div class="full-center-container d-flex justify-content-center align-items-center">
+        <div class="real-time-clock">
+            <span id="clock-time"></span>
+            <span id="clock-date"></span>
         </div>
+        <div class="row g-5 w-100 justify-content-center align-items-center">
 
-        <div class="row g-4 main-content-row">
-
-            <div class="col-lg-7 h-100">
+            <div class="col-lg-6">
                 <div class="flex-column-container">
                     <div id="activation-banner" class="alert alert-warning d-flex justify-content-between align-items-center mb-3 rounded-pill" style="display: none !important;">
                         <span>
@@ -169,7 +185,7 @@
                         <button class="btn btn-warning btn-sm fw-bold rounded-pill" onclick="activateAudio()">Habilitar Audio</button>
                     </div>
                     
-                    <div class="card border-0 shadow-sm flex-grow-1 rounded-4">
+                    <div class="card border-0 shadow-sm rounded-4">
                         <div class="card-header bg-white border-bottom py-2 d-flex justify-content-between align-items-center rounded-top-4">
                             <span class="section-label">
                                 Contenido informativo
@@ -200,43 +216,22 @@
                 </div>
             </div>
 
-            <div class="col-lg-5 h-100">
-                <div class="card border-0 shadow-sm flex-column-container rounded-4">
-                    <div class="card-header bg-white border-bottom py-2 d-flex justify-content-between align-items-center rounded-top-4">
-                        <span class="section-label">
-                            Cola de espera
-                        </span>
+            <div class="col-lg-6 d-flex justify-content-center">
+                <div class="hero-now-serving @(hasTurn ? "has-turn" : "")">
+                    <p class="section-label text-secondary mb-3">
+                        En atención ahora
+                    </p>
 
-                        <span class="badge bg-dark rounded-pill">
-                            @Model.Count
-                        </span>
-                    </div>
-
-                    <div class="card-body p-0 flex-grow-1 scrollable-list">
-                        @if (Model.Any())
-                        {
-                            <ul class="list-group list-group-flush">
-                                @foreach (var turn in Model)
-                                {
-                                    <li class="list-group-item queue-item py-3 px-3 d-flex justify-content-between align-items-center">
-                                        <span class="queue-code text-dark">
-                                            @turn.Code
-                                        </span>
-
-                                        <small class="text-muted">
-                                            @turn.CreatedAt.ToLocalTime().ToString("HH:mm")
-                                        </small>
-                                    </li>
-                                }
-                            </ul>
-                        }
-                        else
-                        {
-                            <p class="text-muted text-center py-4 mb-0 small">
-                                No hay turnos en espera.
-                            </p>
-                        }
-                    </div>
+                    @if (hasTurn)
+                    {
+                        <div class="hero-code text-center">@currentTurnCode</div>
+                    }
+                    else
+                    {
+                        <p class="text-secondary fs-4 mb-0 text-center">
+                            Sin turno activo
+                        </p>
+                    }
                 </div>
             </div>
 
@@ -244,6 +239,30 @@
     </div>
 
     <script>
+        function updateClock() {
+            const now = new Date();
+            
+            // Update Time
+            let hours = now.getHours();
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            
+            hours = hours % 12;
+            hours = hours ? hours : 12; // the hour '0' should be '12'
+            
+            const timeString = `${hours}:${minutes}:${seconds} ${ampm}`;
+            document.getElementById('clock-time').textContent = timeString;
+
+            // Update Date
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const dateString = now.toLocaleDateString('es-ES', options);
+            document.getElementById('clock-date').textContent = dateString;
+        }
+
+        setInterval(updateClock, 1000);
+        updateClock();
+
         // Sonido de campana (Base64) para despertar el audio
         const bellSound = new Audio("data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YTdvT19..."); // (Acortado por brevedad, el código real es funcional)
         
