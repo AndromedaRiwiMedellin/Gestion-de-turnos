@@ -4,10 +4,10 @@
 
 <div class="container py-5">
 
-    <section class="bg-primary text-white rounded-3 shadow-sm p-4 p-md-5 mb-5">
+    <section class="bg-primary text-white rounded-4 shadow-sm p-4 p-md-5 mb-5">
         <div class="row align-items-center g-4">
             <div class="col-lg-8">
-                <span class="badge bg-light text-primary mb-3 px-3 py-2">
+                <span class="badge bg-light text-primary mb-3 px-3 py-2 rounded-pill">
                     Sistema de Gestión de Turnos
                 </span>
 
@@ -23,20 +23,20 @@
                 <div class="d-flex flex-wrap gap-3">
                     <a asp-controller="Turn"
                        asp-action="Index"
-                       class="btn btn-light btn-lg px-4">
+                       class="btn btn-light btn-lg px-4 rounded-pill">
                         Solicitar turno
                     </a>
 
                     <a asp-controller="Advisor"
                        asp-action="Index"
-                       class="btn btn-outline-light btn-lg px-4">
+                       class="btn btn-outline-light btn-lg px-4 rounded-pill">
                         Panel del asesor
                     </a>
                 </div>
             </div>
 
             <div class="col-lg-4">
-                <div class="bg-white text-dark rounded-3 p-4 shadow-sm">
+                <div class="bg-white text-dark rounded-4 p-4 shadow-sm">
                     <h5 class="fw-bold mb-3">
                         Accesos rápidos
                     </h5>
@@ -44,25 +44,25 @@
                     <div class="d-grid gap-2">
                         <a asp-controller="Turn"
                            asp-action="Index"
-                           class="btn btn-primary">
+                           class="btn btn-primary rounded-pill">
                             Entrada de pacientes
                         </a>
 
                         <a asp-controller="WaitingRoom"
                            asp-action="Index"
-                           class="btn btn-outline-primary">
+                           class="btn btn-outline-primary rounded-pill">
                             Sala de espera
                         </a>
 
                         <a asp-controller="Advisor"
                            asp-action="Index"
-                           class="btn btn-outline-primary">
+                           class="btn btn-outline-primary rounded-pill">
                             Atención del asesor
                         </a>
 
                         <a asp-controller="Home"
                            asp-action="Privacy"
-                           class="btn btn-outline-secondary">
+                           class="btn btn-outline-secondary rounded-pill">
                             Privacidad
                         </a>
                     </div>
@@ -84,9 +84,9 @@
 
         <div class="row g-4">
             <div class="col-md-4">
-                <div class="card h-100 border-0 shadow-sm">
+                <div class="card h-100 border-0 shadow-sm rounded-4">
                     <div class="card-body p-4 d-flex flex-column">
-                        <span class="badge bg-primary align-self-start mb-3">
+                        <span class="badge bg-primary align-self-start mb-3 rounded-pill">
                             Entrada
                         </span>
 
@@ -101,7 +101,7 @@
 
                         <a asp-controller="Turn"
                            asp-action="Index"
-                           class="btn btn-primary w-100 mt-3">
+                           class="btn btn-primary w-100 mt-3 rounded-pill">
                             Ir al módulo
                         </a>
                     </div>
@@ -109,9 +109,9 @@
             </div>
 
             <div class="col-md-4">
-                <div class="card h-100 border-0 shadow-sm">
+                <div class="card h-100 border-0 shadow-sm rounded-4">
                     <div class="card-body p-4 d-flex flex-column">
-                        <span class="badge bg-success align-self-start mb-3">
+                        <span class="badge bg-success align-self-start mb-3 rounded-pill">
                             Atención
                         </span>
 
@@ -126,7 +126,7 @@
 
                         <a asp-controller="Advisor"
                            asp-action="Index"
-                           class="btn btn-success w-100 mt-3">
+                           class="btn btn-success w-100 mt-3 rounded-pill">
                             Abrir panel
                         </a>
                     </div>
@@ -134,9 +134,9 @@
             </div>
 
             <div class="col-md-4">
-                <div class="card h-100 border-0 shadow-sm">
+                <div class="card h-100 border-0 shadow-sm rounded-4">
                     <div class="card-body p-4 d-flex flex-column">
-                        <span class="badge bg-dark align-self-start mb-3">
+                        <span class="badge bg-dark align-self-start mb-3 rounded-pill">
                             Sala
                         </span>
 
@@ -151,7 +151,7 @@
 
                         <a asp-controller="WaitingRoom"
                            asp-action="Index"
-                           class="btn btn-dark w-100 mt-3">
+                           class="btn btn-dark w-100 mt-3 rounded-pill">
                             Ver sala
                         </a>
                     </div>
@@ -160,7 +160,7 @@
         </div>
     </section>
 
-    <section class="card border-0 shadow-sm">
+    <section class="card border-0 shadow-sm rounded-4">
         <div class="card-body p-4 p-md-5">
             <div class="row align-items-center g-4">
                 <div class="col-lg-5">

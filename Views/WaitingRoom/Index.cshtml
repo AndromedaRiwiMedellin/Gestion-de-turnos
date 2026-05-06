@@ -62,7 +62,7 @@
 
         .hero-now-serving {
             background: #0d1b2a;
-            border-radius: 1rem;
+            border-radius: 1.5rem;
             padding: 1.5rem;
             flex-shrink: 0;
         }
@@ -89,7 +89,7 @@
 
         .video-wrapper {
             background: #000;
-            border-radius: 1rem 1rem 0 0;
+            border-radius: 1.5rem 1.5rem 0 0;
             overflow: hidden;
             flex: 1;
             display: flex;
@@ -108,7 +108,7 @@
         .video-caption {
             background: #ffffff;
             border-top: 1px solid #e9ecef;
-            border-radius: 0 0 1rem 1rem;
+            border-radius: 0 0 1.5rem 1.5rem;
         }
 
         .queue-item {
@@ -161,16 +161,16 @@
 
             <div class="col-lg-7 h-100">
                 <div class="flex-column-container">
-                    <div id="activation-banner" class="alert alert-warning d-flex justify-content-between align-items-center mb-3" style="display: none !important;">
+                    <div id="activation-banner" class="alert alert-warning d-flex justify-content-between align-items-center mb-3 rounded-pill" style="display: none !important;">
                         <span>
                             <i class="bi bi-volume-up-fill me-2"></i> 
                             <strong>Atención:</strong> El audio está desactivado. Haz clic para escuchar los turnos.
                         </span>
-                        <button class="btn btn-warning btn-sm fw-bold" onclick="activateAudio()">Habilitar Audio</button>
+                        <button class="btn btn-warning btn-sm fw-bold rounded-pill" onclick="activateAudio()">Habilitar Audio</button>
                     </div>
                     
-                    <div class="card border-0 shadow-sm flex-grow-1">
-                        <div class="card-header bg-white border-bottom py-2 d-flex justify-content-between align-items-center">
+                    <div class="card border-0 shadow-sm flex-grow-1 rounded-4">
+                        <div class="card-header bg-white border-bottom py-2 d-flex justify-content-between align-items-center rounded-top-4">
                             <span class="section-label">
                                 Contenido informativo
                             </span>
@@ -201,8 +201,8 @@
             </div>
 
             <div class="col-lg-5 h-100">
-                <div class="card border-0 shadow-sm flex-column-container">
-                    <div class="card-header bg-white border-bottom py-2 d-flex justify-content-between align-items-center">
+                <div class="card border-0 shadow-sm flex-column-container rounded-4">
+                    <div class="card-header bg-white border-bottom py-2 d-flex justify-content-between align-items-center rounded-top-4">
                         <span class="section-label">
                             Cola de espera
                         </span>

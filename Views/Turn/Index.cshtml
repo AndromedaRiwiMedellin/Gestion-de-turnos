@@ -32,8 +32,8 @@
         <div class="container">
             <div class="row justify-content-center">
     <div class="col-md-7">
-        <div class="card border-0 shadow-sm">
-            <div class="card-header bg-primary text-white fw-semibold">
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-header bg-primary text-white fw-semibold rounded-top-4">
                 Módulo de entrada - Registro del paciente
             </div>
 
@@ -60,7 +60,7 @@
 
                         <select id="documentType"
                                 name="documentType"
-                                class="form-select"
+                                class="form-select rounded-pill px-3"
                                 required>
                             <option value="@DocumentType.NationalId">Cédula</option>
                             <option value="@DocumentType.Passport">Pasaporte</option>
@@ -76,7 +76,7 @@
                         <input id="documentNumber"
                                type="text"
                                name="documentNumber"
-                               class="form-control"
+                               class="form-control rounded-pill px-3"
                                placeholder="Ej: 1020304050"
                                required
                                minlength="8"
@@ -93,7 +93,7 @@
                         <input id="fullname"
                                type="text"
                                name="fullname"
-                               class="form-control"
+                               class="form-control rounded-pill px-3"
                                placeholder="Nombre completo del paciente"
                                required
                                maxlength="200"
@@ -109,7 +109,7 @@
                         <input id="phone"
                                type="text"
                                name="phone"
-                               class="form-control"
+                               class="form-control rounded-pill px-3"
                                placeholder="Teléfono de contacto"
                                minlength="10"
                                maxlength="20"
@@ -125,13 +125,13 @@
                         <input id="email"
                                type="email"
                                name="email"
-                               class="form-control"
+                               class="form-control rounded-pill px-3"
                                placeholder="correo@ejemplo.com"
                                required
                                maxlength="200" />
                     </div>
 
-                    <button type="submit" class="btn btn-primary w-100">
+                    <button type="submit" class="btn btn-primary w-100 rounded-pill">
                         Continuar
                     </button>
                 </form>
