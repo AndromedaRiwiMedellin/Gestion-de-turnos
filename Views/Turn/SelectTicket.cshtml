@@ -2,12 +2,38 @@
 @using ShiftManagement.Models
 
 @{
+    Layout = null;
     ViewData["Title"] = "Seleccionar tipo de ticket";
 
     var activeTurn = ViewBag.ActiveTurn as Turn;
 }
 
-<div class="row justify-content-center">
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - ShiftManagement</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            background-color: #f8f9fa;
+        }
+        .full-center-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="full-center-container">
+        <div class="container">
+            <div class="row justify-content-center">
     <div class="col-md-8">
         <div class="card shadow-sm">
             <div class="card-header fw-semibold">
@@ -214,3 +240,7 @@
         });
     }
 </script>
+        </div>
+    </div>
+</body>
+</html>

@@ -10,16 +10,16 @@
                            : "#6c757d";
 }
 
-<div class="d-flex align-items-center mb-4">
-    <h4 class="mb-0 fw-bold">Panel del Asesor</h4>
+<div class="d-flex flex-column align-items-center mb-4 text-center">
+    <h4 class="mb-1 fw-bold">Panel del Asesor</h4>
 
     @if (current != null)
     {
-        <span class="ms-3 badge bg-success">En sesión</span>
+        <span class="badge bg-success rounded-pill">En sesión</span>
     }
     else
     {
-        <span class="ms-3 badge bg-secondary">Libre</span>
+        <span class="badge bg-secondary rounded-pill">Libre</span>
     }
 </div>
 
@@ -43,8 +43,8 @@
 
     @* Queue *@
     <div class="col-md-4">
-        <div class="card h-100 shadow-sm border-start border-3 border-primary">
-            <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
+        <div class="card h-100 shadow-sm border-0 rounded-4">
+            <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center rounded-top-4">
                 <span class="section-label">Cola de espera</span>
                 <span class="badge bg-primary rounded-pill">@waiting.Count</span>
             </div>
@@ -53,7 +53,7 @@
                 <form id="callNextForm" method="post" asp-action="CallNext">
                     <button id="callNextButton"
                             type="submit"
-                            class="btn btn-primary w-100 mb-3"
+                            class="btn btn-primary w-100 mb-3 rounded-pill"
                             @(current != null || !waiting.Any() ? "disabled" : "")>
                         &#9658; Llamar siguiente
                     </button>
@@ -81,17 +81,17 @@
 
     @* Current turn *@
     <div class="col-md-4">
-        <div class="card h-100 shadow-sm border-start border-3" style="border-left-color: @currentBorderColor !important">
-            <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
+        <div class="card h-100 shadow-sm border-0 rounded-4">
+            <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center rounded-top-4">
                 <span class="section-label">Turno actual</span>
 
                 @if (current?.Status == Status.Called)
                 {
-                    <span class="badge bg-warning text-dark">Llamado</span>
+                    <span class="badge bg-warning text-dark rounded-pill">Llamado</span>
                 }
                 else if (current?.Status == Status.InProgress)
                 {
-                    <span class="badge bg-success">En atención</span>
+                    <span class="badge bg-success rounded-pill">En atención</span>
                 }
             </div>
 
@@ -106,7 +106,7 @@
 
                     @if (current.User != null)
                     {
-                        <div class="text-start border rounded p-3 mb-3 small bg-light">
+                        <div class="text-start border rounded-3 p-3 mb-3 small bg-light">
                             <div class="mb-1">
                                 <span class="text-muted">Nombre:</span>
                                 <strong>@current.User.Fullname</strong>
@@ -135,7 +135,7 @@
 
                             <a asp-action="EditUser"
                                asp-route-id="@current.User.Id"
-                               class="btn btn-sm btn-outline-secondary mt-2 w-100">
+                               class="btn btn-sm btn-outline-secondary mt-2 w-100 rounded-pill">
                                 Editar datos
                             </a>
                         </div>
@@ -144,13 +144,13 @@
                     @if (current.Status == Status.Called)
                     {
                         <form method="post" asp-action="StartAttention" asp-route-id="@current.Id" class="mb-2">
-                            <button type="submit" class="btn btn-success w-100">
+                            <button type="submit" class="btn btn-success w-100 rounded-pill">
                                 Iniciar atención
                             </button>
                         </form>
 
                         <form method="post" asp-action="CancelTurn" asp-route-id="@current.Id">
-                            <button type="submit" class="btn btn-outline-danger w-100">
+                            <button type="submit" class="btn btn-outline-danger w-100 rounded-pill">
                                 Cancelar turno
                             </button>
                         </form>
@@ -164,18 +164,18 @@
                                 </label>
 
                                 <textarea name="message"
-                                          class="form-control form-control-sm"
+                                          class="form-control form-control-sm rounded-3"
                                           rows="2"
                                           placeholder="Observaciones del turno..."></textarea>
                             </div>
 
-                            <button type="submit" class="btn btn-success w-100">
+                            <button type="submit" class="btn btn-success w-100 rounded-pill">
                                 Finalizar turno
                             </button>
                         </form>
 
                         <form method="post" asp-action="CancelTurn" asp-route-id="@current.Id">
-                            <button type="submit" class="btn btn-outline-danger w-100">
+                            <button type="submit" class="btn btn-outline-danger w-100 rounded-pill">
                                 Cancelar turno
                             </button>
                         </form>
@@ -187,8 +187,8 @@
 
     @* History *@
     <div class="col-md-4">
-        <div class="card h-100 shadow-sm border-start border-3 border-secondary">
-            <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
+        <div class="card h-100 shadow-sm border-0 rounded-4">
+            <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center rounded-top-4">
                 <span class="section-label">Historial de hoy</span>
                 <span class="badge bg-secondary rounded-pill">@history.Count</span>
             </div>

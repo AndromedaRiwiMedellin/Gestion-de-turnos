@@ -17,9 +17,9 @@ public class AdvisorController : Controller
 
     public async Task<IActionResult> Index()
     {
-        var waiting = await _context.Turns
-            .Where(t => t.Status == Status.Waiting)
-            .OrderBy(t => t.CreatedAt)
+        var waiting = await ApplyTurnPriority(
+                _context.Turns.Where(t => t.Status == Status.Waiting)
+            )
             .ToListAsync();
 
         var current = await _context.Turns
@@ -29,6 +29,7 @@ public class AdvisorController : Controller
             .FirstOrDefaultAsync();
 
         var today = DateTime.UtcNow.Date;
+
         var history = await _context.Turns
             .Where(t => t.Status == Status.Finished && t.UpdatedAt.Date == today)
             .OrderByDescending(t => t.UpdatedAt)
@@ -55,9 +56,9 @@ public class AdvisorController : Controller
             return RedirectToAction(nameof(Index));
         }
 
-        var next = await _context.Turns
-            .Where(t => t.Status == Status.Waiting)
-            .OrderBy(t => t.CreatedAt)
+        var next = await ApplyTurnPriority(
+                _context.Turns.Where(t => t.Status == Status.Waiting)
+            )
             .FirstOrDefaultAsync();
 
         if (next == null)
@@ -69,6 +70,7 @@ public class AdvisorController : Controller
         next.Status = Status.Called;
         next.AdvisorId = AdvisorId;
         next.UpdatedAt = DateTime.UtcNow;
+
         await _context.SaveChangesAsync();
 
         return RedirectToAction(nameof(Index));
@@ -88,6 +90,7 @@ public class AdvisorController : Controller
 
         turn.Status = Status.InProgress;
         turn.UpdatedAt = DateTime.UtcNow;
+
         await _context.SaveChangesAsync();
 
         return RedirectToAction(nameof(Index));
@@ -108,6 +111,7 @@ public class AdvisorController : Controller
         turn.Status = Status.Finished;
         turn.Message = message?.Trim() ?? string.Empty;
         turn.UpdatedAt = DateTime.UtcNow;
+
         await _context.SaveChangesAsync();
 
         return RedirectToAction(nameof(Index));
@@ -127,6 +131,7 @@ public class AdvisorController : Controller
 
         turn.Status = Status.Cancelled;
         turn.UpdatedAt = DateTime.UtcNow;
+
         await _context.SaveChangesAsync();
 
         return RedirectToAction(nameof(Index));
@@ -136,7 +141,12 @@ public class AdvisorController : Controller
     public async Task<IActionResult> EditUser(int id)
     {
         var user = await _context.Users.FindAsync(id);
-        if (user == null) return NotFound();
+
+        if (user == null)
+        {
+            return NotFound();
+        }
+
         return View(user);
     }
 
@@ -145,15 +155,28 @@ public class AdvisorController : Controller
     public async Task<IActionResult> EditUser(int id, string fullname, string phone, string email)
     {
         var user = await _context.Users.FindAsync(id);
-        if (user == null) return NotFound();
+
+        if (user == null)
+        {
+            return NotFound();
+        }
 
         user.Fullname = fullname.Trim();
         user.Phone = phone.Trim();
         user.Email = email.Trim();
         user.UpdatedAt = DateTime.UtcNow;
+
         await _context.SaveChangesAsync();
 
         TempData["Info"] = $"Usuario {user.Fullname} actualizado correctamente.";
+
         return RedirectToAction(nameof(Index));
+    }
+
+    private static IQueryable<Turn> ApplyTurnPriority(IQueryable<Turn> query)
+    {
+        return query
+            .OrderBy(t => t.Code != null && EF.Functions.Like(t.Code, "U-%") ? 0 : 1)
+            .ThenBy(t => t.CreatedAt);
     }
 }

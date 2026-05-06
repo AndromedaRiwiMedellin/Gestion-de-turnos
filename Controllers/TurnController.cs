@@ -36,10 +36,23 @@ public class TurnController : Controller
         {
             ModelState.AddModelError(nameof(documentNumber), "El número de documento es obligatorio.");
         }
+        else if (documentNumber.Length < 8 || documentNumber.Length > 15 || !documentNumber.All(char.IsDigit))
+        {
+            ModelState.AddModelError(nameof(documentNumber), "El documento debe tener entre 8 y 15 dígitos.");
+        }
 
         if (string.IsNullOrWhiteSpace(fullname))
         {
             ModelState.AddModelError(nameof(fullname), "El nombre completo es obligatorio.");
+        }
+        else if (!fullname.All(c => char.IsLetter(c) || char.IsWhiteSpace(c)))
+        {
+            ModelState.AddModelError(nameof(fullname), "El nombre solo puede contener letras.");
+        }
+
+        if (!string.IsNullOrWhiteSpace(phone) && (phone.Length < 10 || !phone.All(char.IsDigit)))
+        {
+            ModelState.AddModelError(nameof(phone), "El teléfono debe tener al menos 10 dígitos.");
         }
 
         if (string.IsNullOrWhiteSpace(email))
@@ -198,7 +211,7 @@ public class TurnController : Controller
             TempData["Error"] = "No se pudo encontrar el turno generado.";
             return RedirectToAction(nameof(Index));
         }
-        
+
         await _emailService.SendEmailTicket(user.Email, user.Fullname, code);
 
         return RedirectToAction(nameof(Ticket), new { id = createdTurn.Id, generated = true });
@@ -258,7 +271,10 @@ public class TurnController : Controller
                 .Include(t => t.WaitingRoom)
                 .FirstOrDefault(t => t.Id == id);
 
-            if (turn == null) return NotFound();
+            if (turn == null)
+            {
+                return NotFound();
+            }
 
             using var ms = new System.IO.MemoryStream();
 
@@ -317,7 +333,8 @@ public class TurnController : Controller
             .CountAsync(t =>
                 t.CreatedAt >= startDate &&
                 t.CreatedAt < endDate &&
-                t.Code.StartsWith(prefix + "-"));
+                t.Code != null &&
+                EF.Functions.Like(t.Code, prefix + "-%"));
 
         return $"{prefix}-{totalTodayByType + 1:D3}";
     }
@@ -337,9 +354,23 @@ public class TurnController : Controller
         return ticketType switch
         {
             "PRIORITY" => "U",
+            "PRIORITARIO" => "U",
+            "PREFERENCIAL" => "U",
+            "URGENTE" => "U",
+            "SPECIAL" => "U",
+
             "LABORATORY" => "L",
+            "LABORATORIO" => "L",
+
             "MEDICAL_APPOINTMENT" => "C",
+            "CITA_MEDICA" => "C",
+            "CITA" => "C",
+
             "INFORMATION" => "I",
+            "INFORMACION" => "I",
+            "INFO" => "I",
+
+            "GENERAL" => "G",
             _ => "G"
         };
     }
