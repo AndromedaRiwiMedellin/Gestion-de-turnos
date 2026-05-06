@@ -1,13 +1,39 @@
 @using ShiftManagement.Models
 
 @{
+    Layout = null;
     ViewData["Title"] = "Registro de paciente";
 }
 
-<div class="row justify-content-center">
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - ShiftManagement</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            background-color: #f8f9fa;
+        }
+        .full-center-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="full-center-container">
+        <div class="container">
+            <div class="row justify-content-center">
     <div class="col-md-7">
-        <div class="card border-0 shadow-sm">
-            <div class="card-header bg-primary text-white fw-semibold">
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-header bg-primary text-white fw-semibold rounded-top-4">
                 Módulo de entrada - Registro del paciente
             </div>
 
@@ -34,7 +60,7 @@
 
                         <select id="documentType"
                                 name="documentType"
-                                class="form-select"
+                                class="form-select rounded-pill px-3"
                                 required>
                             <option value="@DocumentType.NationalId">Cédula</option>
                             <option value="@DocumentType.Passport">Pasaporte</option>
@@ -50,10 +76,13 @@
                         <input id="documentNumber"
                                type="text"
                                name="documentNumber"
-                               class="form-control"
+                               class="form-control rounded-pill px-3"
                                placeholder="Ej: 1020304050"
                                required
-                               maxlength="50" />
+                               minlength="8"
+                               maxlength="15"
+                               pattern="\d{8,15}"
+                               title="El documento debe tener entre 8 y 15 dígitos" />
                     </div>
 
                     <div class="mb-3">
@@ -64,10 +93,12 @@
                         <input id="fullname"
                                type="text"
                                name="fullname"
-                               class="form-control"
+                               class="form-control rounded-pill px-3"
                                placeholder="Nombre completo del paciente"
                                required
-                               maxlength="200" />
+                               maxlength="200"
+                               pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+"
+                               title="El nombre solo puede contener letras" />
                     </div>
 
                     <div class="mb-3">
@@ -78,9 +109,12 @@
                         <input id="phone"
                                type="text"
                                name="phone"
-                               class="form-control"
+                               class="form-control rounded-pill px-3"
                                placeholder="Teléfono de contacto"
-                               maxlength="20" />
+                               minlength="10"
+                               maxlength="20"
+                               pattern="\d{10,}"
+                               title="El teléfono debe tener al menos 10 dígitos" />
                     </div>
 
                     <div class="mb-4">
@@ -91,13 +125,13 @@
                         <input id="email"
                                type="email"
                                name="email"
-                               class="form-control"
+                               class="form-control rounded-pill px-3"
                                placeholder="correo@ejemplo.com"
                                required
                                maxlength="200" />
                     </div>
 
-                    <button type="submit" class="btn btn-primary w-100">
+                    <button type="submit" class="btn btn-primary w-100 rounded-pill">
                         Continuar
                     </button>
                 </form>
@@ -105,3 +139,7 @@
         </div>
     </div>
 </div>
+        </div>
+    </div>
+</body>
+</html>

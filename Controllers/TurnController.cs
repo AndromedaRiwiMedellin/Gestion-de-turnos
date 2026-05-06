@@ -36,10 +36,23 @@ public class TurnController : Controller
         {
             ModelState.AddModelError(nameof(documentNumber), "El número de documento es obligatorio.");
         }
+        else if (documentNumber.Length < 8 || documentNumber.Length > 15 || !documentNumber.All(char.IsDigit))
+        {
+            ModelState.AddModelError(nameof(documentNumber), "El documento debe tener entre 8 y 15 dígitos.");
+        }
 
         if (string.IsNullOrWhiteSpace(fullname))
         {
             ModelState.AddModelError(nameof(fullname), "El nombre completo es obligatorio.");
+        }
+        else if (!fullname.All(c => char.IsLetter(c) || char.IsWhiteSpace(c)))
+        {
+            ModelState.AddModelError(nameof(fullname), "El nombre solo puede contener letras.");
+        }
+
+        if (!string.IsNullOrWhiteSpace(phone) && (phone.Length < 10 || !phone.All(char.IsDigit)))
+        {
+            ModelState.AddModelError(nameof(phone), "El teléfono debe tener al menos 10 dígitos.");
         }
 
         if (string.IsNullOrWhiteSpace(email))
